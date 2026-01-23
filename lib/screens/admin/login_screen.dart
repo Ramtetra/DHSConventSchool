@@ -1,3 +1,5 @@
+import 'package:dhs_convert_school/screens/student/student_dashboard_screen.dart';
+import 'package:dhs_convert_school/screens/teacher/teacher_dashboard_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'admin_dashboard.dart';
@@ -25,7 +27,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           builder: (context) => const AdminDashboardScreen(),
         ),
       );
-    } else {
+    } else if(username=='student' && password == '123456'){
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const StudentDashboardScreen(),
+        ),
+      );
+    }
+    else if(username=='teacher' && password == '123456'){
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const TeacherDashboardScreen(),
+        ),
+      );
+    }
+    else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Invalid login credentials"),
