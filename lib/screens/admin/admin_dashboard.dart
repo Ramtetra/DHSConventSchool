@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import '../../utils/action_button.dart';
+import '../../utils/admin_drawer.dart';
 import '../../utils/dashboard_card.dart';
 import '../../utils/report_title.dart';
+import 'add_student_screen.dart';
+import 'add_teacher_screen.dart';
+import 'admin_attendance_screen.dart';
+import 'admin_fee_structure_screen.dart';
 
 class AdminDashboardScreen extends ConsumerStatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -24,16 +28,16 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
             icon: const Icon(Icons.notifications_outlined),
             onPressed: () {},
           ),
-          const Padding(
+         /* const Padding(
             padding: EdgeInsets.only(right: 12),
             child: CircleAvatar(
               radius: 16,
               child: Icon(Icons.person, size: 18),
             ),
-          )
+          )*/
         ],
       ),
-
+      drawer: const AdminDrawer(), // ✅ ADD THIS
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -98,11 +102,39 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
               crossAxisCount: 4,
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              children: const [
-                ActionButton(icon: Icons.person_add, label: "Add Student"),
-                ActionButton(icon: Icons.person_add_alt, label: "Add Teacher"),
-                ActionButton(icon: Icons.assignment, label: "Attendance"),
-                ActionButton(icon: Icons.receipt_long, label: "Fee Report"),
+              children: [
+                ActionButton(icon: Icons.person_add, label: "Add Student", onTap: () {
+                  Navigator.push(
+                    context,
+                     MaterialPageRoute(
+                      builder: (_) => const AddStudentScreen(),
+                    ),
+                  );
+                },),
+                ActionButton(icon: Icons.person_add_alt, label: "Add Teacher", onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const AddTeacherScreen(),
+                    ),
+                  );
+                },),
+                ActionButton(icon: Icons.assignment, label: "Attendance", onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const AdminAttendanceScreen(),
+                    ),
+                  );
+                },),
+                ActionButton(icon: Icons.receipt_long, label: "Fee Report", onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const AdminFeeStructureScreen(),
+                    ),
+                  );
+                },),
               ],
             ),
 

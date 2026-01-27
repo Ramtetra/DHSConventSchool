@@ -1,6 +1,6 @@
-import 'package:dhs_convert_school/screens/student/student_attendance_screen.dart';
-import 'package:dhs_convert_school/screens/student/student_home_work_screen.dart';
-import 'package:dhs_convert_school/screens/student/student_time_table_screen.dart';
+import 'package:dhs/screens/student/student_attendance_screen.dart';
+import 'package:dhs/screens/student/student_home_work_screen.dart';
+import 'package:dhs/screens/student/student_time_table_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

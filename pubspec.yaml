@@ -1,4 +1,4 @@
-name: dhs_convert_school
+name: dhs
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -48,6 +48,8 @@ dependencies:
   http: ^1.1.0
   flutter_riverpod: ^2.4.0
   flutter_dotenv: ^5.1.0
+  table_calendar: ^3.0.9
+  intl: ^0.19.0
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8

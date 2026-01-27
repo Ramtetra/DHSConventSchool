@@ -1,116 +1,186 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+import 'package:table_calendar/table_calendar.dart';
 
-import '../../utils/summary_card.dart';
+import '../../models/attendance_model.dart';
+import '../../providers/attendance_provider.dart';
+import '../../utils/attendance_color.dart';
 
 class StudentAttendanceScreen extends ConsumerStatefulWidget {
   const StudentAttendanceScreen({super.key});
 
   @override
   ConsumerState<StudentAttendanceScreen> createState() =>
-      StudentAttendanceScreenState();
+      _StudentAttendanceScreenState();
 }
 
-class StudentAttendanceScreenState
+class _StudentAttendanceScreenState
     extends ConsumerState<StudentAttendanceScreen> {
+  DateTime _focusedDay = DateTime.now();
+  DateTime? _selectedDay;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final notifier = ref.read(attendanceProvider.notifier);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Attendance"),
+        title: const Text("Student Attendance"),
+        centerTitle: true,
       ),
+      body: Column(
+        children: [
+          /// 📅 Calendar
+          Card(
+            margin: const EdgeInsets.all(12),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            elevation: 3,
+            child: TableCalendar(
+              firstDay: DateTime.utc(2020, 1, 1),
+              lastDay: DateTime.utc(2030, 12, 31),
+              focusedDay: _focusedDay,
 
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+              selectedDayPredicate: (day) =>
+                  isSameDay(_selectedDay, day),
 
-            // 👤 Student Info
-            Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: const ListTile(
-                leading: CircleAvatar(child: Icon(Icons.person)),
-                title: Text(
-                  "Rahul Sharma",
-                  style: TextStyle(fontWeight: FontWeight.bold),
+              onDaySelected: (selectedDay, focusedDay) {
+                setState(() {
+                  _selectedDay = selectedDay;
+                  _focusedDay = focusedDay;
+                });
+              },
+
+              calendarStyle: CalendarStyle(
+                todayDecoration: BoxDecoration(
+                  color: Colors.blue.shade100,
+                  shape: BoxShape.circle,
                 ),
-                subtitle: Text("Class 8 • Section A"),
+                selectedDecoration: const BoxDecoration(
+                  color: Colors.blue,
+                  shape: BoxShape.circle,
+                ),
               ),
-            ),
 
-            const SizedBox(height: 20),
+              calendarBuilders: CalendarBuilders(
+                markerBuilder: (context, date, events) {
+                  final status = notifier.getStatus(date);
+                  if (status == null) return const SizedBox();
 
-            // 📊 Attendance Summary
-            Row(
-            children: [
-            SummaryCard(title: "Present", value: "22", color: Colors.green),
-            SummaryCard(title: "Absent", value: "3", color: Colors.red),
-            SummaryCard(title: "Leave", value: "2", color: Colors.orange),
-            ],
-            ),
-
-            const SizedBox(height: 24),
-
-            // 📈 Percentage
-            Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Row(
-                  children: [
-                    SizedBox(
-                      height: 80,
-                      width: 80,
-                      child: CircularProgressIndicator(
-                        value: 0.88,
-                        strokeWidth: 8,
-                        color: theme.primaryColor,
-                        backgroundColor: Colors.grey.shade200,
+                  return Positioned(
+                    bottom: 6,
+                    child: Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: attendanceColor(status),
+                        shape: BoxShape.circle,
                       ),
                     ),
-                    const SizedBox(width: 20),
-                    const Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("Attendance Percentage",
-                            style: TextStyle(fontWeight: FontWeight.bold)),
-                        SizedBox(height: 6),
-                        Text("88%",
-                            style: TextStyle(
-                                fontSize: 24, fontWeight: FontWeight.bold)),
-                      ],
-                    )
-                  ],
-                ),
+                  );
+                },
               ),
             ),
+          ),
 
-            const SizedBox(height: 24),
+          /// 📄 Selected Day Details
+          Expanded(
+            child: _selectedDay == null
+                ? const Center(
+              child: Text(
+                "Select a date to view attendance",
+                style: TextStyle(fontSize: 16),
+              ),
+            )
+                : _attendanceDetailCard(_selectedDay!, notifier),
+          ),
+        ],
+      ),
+    );
+  }
 
-            // 📅 History
-            Text(
-              "Attendance History",
-              style: theme.textTheme.titleMedium
-                  ?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 12),
+  Widget _attendanceDetailCard(
+      DateTime day,
+      AttendanceNotifier notifier,
+      ) {
+    final status = notifier.getStatus(day);
 
-            attendanceTile("01 Aug 2026", "Present", Colors.green),
-            attendanceTile("02 Aug 2026", "Present", Colors.green),
-            attendanceTile("03 Aug 2026", "Absent", Colors.red),
-            attendanceTile("04 Aug 2026", "Leave", Colors.orange),
-            attendanceTile("05 Aug 2026", "Present", Colors.green),
-          ],
+    return Padding(
+     // padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 50),
+      child: Card(
+        shape:
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        elevation: 3,
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                DateFormat("dd MMM yyyy").format(day),
+                style: const TextStyle(
+                    fontSize: 15, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
+
+              /// Status Chip
+              Chip(
+                label: Text(
+                  status == null
+                      ? "NO RECORD"
+                      : status.name.toUpperCase(),
+                  style: const TextStyle(color: Colors.white),
+                ),
+                backgroundColor: status == null
+                    ? Colors.grey
+                    : attendanceColor(status),
+              ),
+
+              const SizedBox(height: 24),
+
+              /// Action Buttons
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _actionBtn(
+                    "Present",
+                    Colors.green,
+                        () => notifier.markAttendance(
+                        day, AttendanceStatus.present),
+                  ),
+                  _actionBtn(
+                    "Absent",
+                    Colors.red,
+                        () => notifier.markAttendance(
+                        day, AttendanceStatus.absent),
+                  ),
+                  _actionBtn(
+                    "Holiday",
+                    Colors.orange,
+                        () => notifier.markAttendance(
+                        day, AttendanceStatus.holiday),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  Widget _actionBtn(
+      String text, Color color, VoidCallback onTap) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: color,
+        foregroundColor: Colors.white,
+      ),
+      onPressed: onTap,
+      child: Text(text),
     );
   }
 }

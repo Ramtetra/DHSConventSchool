@@ -1,15 +1,21 @@
-import 'package:dhs_convert_school/screens/teacher/teacher_attendance_screen.dart';
+import 'package:dhs/screens/teacher/teacher_attendance_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../utils/class_title.dart';
 import '../../utils/teacher_action_tile.dart';
 import '../../utils/teacher_drawer.dart';
 import '../../utils/teacher_state_card.dart';
-import '../student/student_home_work_screen.dart';
 
-class TeacherDashboardScreen extends StatelessWidget {
+class TeacherDashboardScreen extends ConsumerStatefulWidget {
   const TeacherDashboardScreen({super.key});
+  @override
+  ConsumerState<TeacherDashboardScreen> createState() =>
+      _TeacherDashboardScreenState();
+}
 
+class _TeacherDashboardScreenState
+    extends ConsumerState<TeacherDashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);

@@ -1,6 +1,7 @@
-import 'package:dhs_convert_school/utils/time_table_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../utils/time_table_card.dart';
 
 class StudentTimetableScreen extends ConsumerStatefulWidget {
   const StudentTimetableScreen({super.key});

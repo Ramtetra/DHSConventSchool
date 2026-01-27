@@ -1,7 +1,7 @@
-import 'package:dhs_convert_school/screens/student/student_dashboard_screen.dart';
-import 'package:dhs_convert_school/screens/teacher/teacher_dashboard_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../student/student_dashboard_screen.dart';
+import '../teacher/teacher_dashboard_screen.dart';
 import 'admin_dashboard.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -20,14 +20,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final password = passwordController.text.trim();
 
     // 🔐 Static demo login
-    if (username == 'admin' && password == '123456') {
+    if (username == 'admin' && password == '1234') {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => const AdminDashboardScreen(),
         ),
       );
-    } else if(username=='student' && password == '123456'){
+    } else if(username=='student' && password == '1234'){
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -35,7 +35,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ),
       );
     }
-    else if(username=='teacher' && password == '123456'){
+    else if(username=='teacher' && password == '1234'){
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(

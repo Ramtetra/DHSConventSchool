@@ -1,9 +1,8 @@
-import 'package:dhs_convert_school/screens/admin/admin_dashboard.dart';
-import 'package:dhs_convert_school/screens/admin/login_screen.dart';
-import 'package:dhs_convert_school/screens/student/student_dashboard_screen.dart';
-import 'package:dhs_convert_school/screens/student/student_time_table_screen.dart';
-import 'package:dhs_convert_school/utils/time_table_card.dart';
-import 'package:dhs_convert_school/screens/teacher/teacher_dashboard_screen.dart';
+import 'package:dhs/screens/admin/admin_dashboard.dart';
+import 'package:dhs/screens/admin/login_screen.dart';
+import 'package:dhs/screens/student/student_dashboard_screen.dart';
+import 'package:dhs/screens/student/student_time_table_screen.dart';
+import 'package:dhs/screens/teacher/teacher_dashboard_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
