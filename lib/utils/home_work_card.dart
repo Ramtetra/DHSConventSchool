@@ -16,6 +16,7 @@ class HomeworkCard extends StatelessWidget {
     required this.teacher,
     required this.dueDate,
     required this.status,
+    required className,
   });
 
   Color get statusColor {
