@@ -1,12 +1,8 @@
-import 'package:dhs/screens/admin/admin_dashboard.dart';
-import 'package:dhs/screens/admin/login_screen.dart';
-import 'package:dhs/screens/student/student_dashboard_screen.dart';
-import 'package:dhs/screens/student/student_time_table_screen.dart';
-import 'package:dhs/screens/teacher/teacher_dashboard_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-// import other screens when ready
+
+import 'screens/admin/splash_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,36 +16,22 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-
-      title: 'DHSConvert',
-
+      title: 'DHS',
       themeMode: ThemeMode.light,
-
       theme: ThemeData(
         useMaterial3: true,
         primaryColor: const Color(0xFF005B85),
-
+        scaffoldBackgroundColor: Colors.white,
         fontFamily: GoogleFonts.lato().fontFamily,
         textTheme: GoogleFonts.latoTextTheme(),
-
         appBarTheme: const AppBarTheme(
           backgroundColor: Color(0xFF005B85),
           foregroundColor: Colors.white,
           centerTitle: true,
-          elevation: 4,
+          elevation: 2,
         ),
       ),
-
-      initialRoute: '/',
-
-      routes: {
-        '/': (context) => const LoginScreen(),
-        // Later usage
-       '/admin': (context) => const AdminDashboardScreen(),
-        '/teacher': (context) => const TeacherDashboardScreen(),
-       '/student': (context) => const StudentDashboardScreen(),
-        '/parent': (context) => const StudentTimetableScreen(),
-      },
+      home: const SplashScreen(), // 🔥 Always splash first
     );
   }
 }

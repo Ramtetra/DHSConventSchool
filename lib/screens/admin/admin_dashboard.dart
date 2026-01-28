@@ -4,10 +4,12 @@ import '../../utils/action_button.dart';
 import '../../utils/admin_drawer.dart';
 import '../../utils/dashboard_card.dart';
 import '../../utils/report_title.dart';
+import '../../utils/session_manager.dart';
 import 'add_student_screen.dart';
 import 'add_teacher_screen.dart';
 import 'admin_attendance_screen.dart';
 import 'admin_fee_structure_screen.dart';
+import 'login_screen.dart';
 
 class AdminDashboardScreen extends ConsumerStatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -16,6 +18,25 @@ class AdminDashboardScreen extends ConsumerStatefulWidget {
 }
 
 class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _checkSession(); // ✅ runs once when screen opens
+  }
+  Future<void> _checkSession() async {
+    final loggedIn = await SessionManager.isLoggedIn();
+    final role = await SessionManager.getRole();
+    print("getLogiIn:: $loggedIn");
+    print("getRole:: $role");
+/*    if (!loggedIn || role != 'admin') {
+      if (!mounted) return;
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
+            (route) => false,
+      );
+    }*/
+  }
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -28,7 +49,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
             icon: const Icon(Icons.notifications_outlined),
             onPressed: () {},
           ),
-         /* const Padding(
+          /* const Padding(
             padding: EdgeInsets.only(right: 12),
             child: CircleAvatar(
               radius: 16,
@@ -38,6 +59,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
         ],
       ),
       drawer: const AdminDrawer(), // ✅ ADD THIS
+
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -103,15 +125,17 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               children: [
-                ActionButton(icon: Icons.person_add, label: "Add Student", onTap: () {
+                ActionButton(
+                  icon: Icons.person_add, label: "Add Student", onTap: () {
                   Navigator.push(
                     context,
-                     MaterialPageRoute(
+                    MaterialPageRoute(
                       builder: (_) => const AddStudentScreen(),
                     ),
                   );
                 },),
-                ActionButton(icon: Icons.person_add_alt, label: "Add Teacher", onTap: () {
+                ActionButton(
+                  icon: Icons.person_add_alt, label: "Add Teacher", onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -119,7 +143,8 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                     ),
                   );
                 },),
-                ActionButton(icon: Icons.assignment, label: "Attendance", onTap: () {
+                ActionButton(
+                  icon: Icons.assignment, label: "Attendance", onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -127,7 +152,8 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                     ),
                   );
                 },),
-                ActionButton(icon: Icons.receipt_long, label: "Fee Report", onTap: () {
+                ActionButton(
+                  icon: Icons.receipt_long, label: "Fee Report", onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -180,6 +206,9 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
           ],
         ),
       ),
+
     );
   }
+
+
 }

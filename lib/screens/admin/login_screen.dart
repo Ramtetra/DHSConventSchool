@@ -1,7 +1,10 @@
+import 'package:dhs/screens/admin/splash_screen.dart';
+import 'package:dhs/screens/student/student_dashboard_screen.dart';
+import 'package:dhs/screens/teacher/teacher_dashboard_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../student/student_dashboard_screen.dart';
-import '../teacher/teacher_dashboard_screen.dart';
+import '../../utils/session_manager.dart';
+import '../auth/auth_provider.dart';
 import 'admin_dashboard.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -15,42 +18,51 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  void _login() {
+  void _login() async {
     final username = usernameController.text.trim();
     final password = passwordController.text.trim();
 
-    // 🔐 Static demo login
-    if (username == 'admin' && password == '1234') {
+    if (password != '1234') {
+      _error();
+      return;
+    }
+
+    if (username == 'admin') {
+      await SessionManager.saveLogin(UserRole.admin);
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-          builder: (context) => const AdminDashboardScreen(),
-        ),
-      );
-    } else if(username=='student' && password == '1234'){
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const StudentDashboardScreen(),
-        ),
+        MaterialPageRoute(builder: (_) => const AdminDashboardScreen()),
       );
     }
-    else if(username=='teacher' && password == '1234'){
+    else if (username == 'teacher') {
+      await SessionManager.saveLogin(UserRole.teacher);
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-          builder: (context) => const TeacherDashboardScreen(),
-        ),
+        MaterialPageRoute(builder: (_) => const TeacherDashboardScreen()),
+      );
+    }
+    else if (username == 'student') {
+      await SessionManager.saveLogin(UserRole.student);
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const StudentDashboardScreen()),
       );
     }
     else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Invalid login credentials"),
-          backgroundColor: Colors.red,
-        ),
-      );
+      _error();
     }
+  }
+
+
+
+
+  void _error() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Invalid login credentials"),
+        backgroundColor: Colors.red,
+      ),
+    );
   }
 
   @override
@@ -87,51 +99,42 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             size: 40, color: Colors.white),
                       ),
                       const SizedBox(height: 16),
-
                       Text(
                         "DHS Convent School",
                         style: theme.textTheme.headlineSmall
                             ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 6),
-
                       Text(
                         "Login to continue",
                         style: theme.textTheme.bodyMedium
                             ?.copyWith(color: Colors.grey),
                       ),
-
                       const SizedBox(height: 30),
 
-                      // Username
                       TextFormField(
                         controller: usernameController,
                         decoration: InputDecoration(
                           labelText: "Email / Mobile",
-                          prefixIcon:
-                          const Icon(Icons.person_outline),
+                          prefixIcon: const Icon(Icons.person_outline),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(14),
                           ),
                         ),
                       ),
-
                       const SizedBox(height: 16),
 
-                      // Password
                       TextFormField(
                         controller: passwordController,
                         obscureText: true,
                         decoration: InputDecoration(
                           labelText: "Password",
-                          prefixIcon:
-                          const Icon(Icons.lock_outline),
+                          prefixIcon: const Icon(Icons.lock_outline),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(14),
                           ),
                         ),
                       ),
-
                       const SizedBox(height: 20),
 
                       SizedBox(
@@ -144,15 +147,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               borderRadius: BorderRadius.circular(14),
                             ),
                           ),
-                          child: const Text(
-                            "LOGIN",
-                            style: TextStyle(fontSize: 16),
-                          ),
+                          child: const Text("LOGIN",
+                              style: TextStyle(fontSize: 16)),
                         ),
                       ),
 
                       const SizedBox(height: 20),
-
                       Text(
                         "Admin • Teacher • Student",
                         style: theme.textTheme.bodySmall

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../screens/auth/auth_provider.dart';
 import 'drawer_items.dart';
 
-class AdminDrawer extends StatelessWidget {
+class AdminDrawer extends ConsumerWidget   {
   const AdminDrawer({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Drawer(
       child: Column(
         children: [
@@ -91,7 +93,8 @@ class AdminDrawer extends StatelessWidget {
             title: "Logout",
             color: Colors.red,
             onTap: () {
-              // logout logic
+              Navigator.pop(context);
+              ref.read(authProvider.notifier).logout();
             },
           ),
         ],
