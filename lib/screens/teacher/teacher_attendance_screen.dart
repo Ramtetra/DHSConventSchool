@@ -31,6 +31,7 @@ class _TeacherAttendanceScreenState extends State<TeacherAttendanceScreen> {
 
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
+        //padding: const EdgeInsets.fromLTRB(16, 16, 16, 50),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -125,7 +126,8 @@ class _TeacherAttendanceScreenState extends State<TeacherAttendanceScreen> {
 
       /// ✅ Submit Button
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(16),
+        //padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 50),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 14),

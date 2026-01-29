@@ -4,6 +4,7 @@ import 'home_work_status.dart';
 
 class HomeworkCard extends StatelessWidget {
   final String subject;
+  final String className;
   final String title;
   final String teacher;
   final String dueDate;
@@ -12,12 +13,13 @@ class HomeworkCard extends StatelessWidget {
   const HomeworkCard({
     super.key,
     required this.subject,
+    required this.className,
     required this.title,
     required this.teacher,
     required this.dueDate,
     required this.status,
-    required className,
   });
+
 
   Color get statusColor {
     switch (status) {

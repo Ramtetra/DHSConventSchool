@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../utils/home_work_card.dart';
+import '../../utils/home_work_status.dart';
 
 class TeacherHomeworkScreen extends StatefulWidget {
   const TeacherHomeworkScreen({super.key});
@@ -13,19 +14,22 @@ class _TeacherHomeworkScreenState extends State<TeacherHomeworkScreen> {
   final List<Map<String, dynamic>> homeworkList = [
     {
       'subject': 'Mathematics',
-      'class': 'Class 8-A',
+      'className': 'Class 8-A',
       'title': 'Algebra Practice',
+      'teacher': 'Mr. Sharma',
       'dueDate': '12 Feb 2026',
-      'status': 'Pending',
+      'status': HomeworkStatus.pending,
     },
     {
       'subject': 'Science',
-      'class': 'Class 7-B',
+      'className': 'Class 7-B',
       'title': 'Human Digestive System',
+      'teacher': 'Ms. Neha',
       'dueDate': '10 Feb 2026',
-      'status': 'Submitted',
+      'status': HomeworkStatus.submitted,
     },
   ];
+
 
   @override
   Widget build(BuildContext context) {
@@ -54,11 +58,11 @@ class _TeacherHomeworkScreenState extends State<TeacherHomeworkScreen> {
             final hw = homeworkList[index];
             return HomeworkCard(
               subject: hw['subject'],
-              className: hw['class'],
+              className: hw['className'],
               title: hw['title'],
+              teacher: hw['teacher'],
               dueDate: hw['dueDate'],
               status: hw['status'],
-              teacher: '',
             );
           },
         ),

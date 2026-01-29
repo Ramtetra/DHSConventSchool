@@ -20,9 +20,9 @@ class StudentHomeworkScreen extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                _summaryCard("Pending", "3", Colors.orange),
+                summaryCard("Pending", "3", Colors.orange),
                 const SizedBox(width: 12),
-                _summaryCard("Submitted", "5", Colors.green),
+                summaryCard("Submitted", "5", Colors.green),
               ],
             ),
           ),
@@ -30,9 +30,10 @@ class StudentHomeworkScreen extends StatelessWidget {
           /// Homework List
           Expanded(
             child: ListView(
-              children: const [
+              children: [
                 HomeworkCard(
                   subject: "Mathematics",
+                  className: "Class 8-A",
                   title: "Solve chapter 5 problems",
                   teacher: "Mr. Sharma",
                   dueDate: "25 Jan",
@@ -41,6 +42,7 @@ class StudentHomeworkScreen extends StatelessWidget {
 
                 HomeworkCard(
                   subject: "English",
+                  className: "Class 7-B",
                   title: "Write an essay on Nature",
                   teacher: "Ms. Neha",
                   dueDate: "22 Jan",
@@ -49,6 +51,7 @@ class StudentHomeworkScreen extends StatelessWidget {
 
                 HomeworkCard(
                   subject: "Science",
+                  className: "Class 5-B",
                   title: "Prepare lab notes",
                   teacher: "Dr. Verma",
                   dueDate: "20 Jan",
@@ -57,12 +60,13 @@ class StudentHomeworkScreen extends StatelessWidget {
               ],
             ),
           )
+
         ],
       ),
     );
   }
 
-  Widget _summaryCard(String title, String count, Color color) {
+  Widget summaryCard(String title, String count, Color color) {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(16),

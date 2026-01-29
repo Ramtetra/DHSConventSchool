@@ -1,4 +1,9 @@
 import 'package:dhs/screens/teacher/teacher_attendance_screen.dart';
+import 'package:dhs/screens/teacher/teacher_homework_screen.dart';
+import 'package:dhs/screens/teacher/teacher_mark_entry_screen.dart';
+import 'package:dhs/screens/teacher/teacher_notice_screen.dart';
+import 'package:dhs/screens/teacher/teacher_profile_screen.dart';
+import 'package:dhs/screens/teacher/teacher_student_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -35,7 +40,8 @@ class _TeacherDashboardScreenState
       drawer: const TeacherDrawer(),
 
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+       // padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 50),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -128,7 +134,7 @@ class _TeacherDashboardScreenState
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => const TeacherAttendanceScreen(),
+                      builder: (_) => const TeacherHomeworkScreen(),
                     ),
                   );
                 },),
@@ -136,7 +142,7 @@ class _TeacherDashboardScreenState
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => const TeacherAttendanceScreen(),
+                      builder: (_) => const TeacherStudentListScreen(),
                     ),
                   );
                 },),
@@ -144,7 +150,7 @@ class _TeacherDashboardScreenState
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => const TeacherAttendanceScreen(),
+                      builder: (_) => const TeacherMarkEntryScreen(),
                     ),
                   );
                 },),
@@ -152,7 +158,7 @@ class _TeacherDashboardScreenState
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => const TeacherAttendanceScreen(),
+                      builder: (_) => const TeacherNoticeScreen(),
                     ),
                   );
                 },),
@@ -160,7 +166,7 @@ class _TeacherDashboardScreenState
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => const TeacherAttendanceScreen(),
+                      builder: (_) => const TeacherProfileScreen(),
                     ),
                   );
                 },),
