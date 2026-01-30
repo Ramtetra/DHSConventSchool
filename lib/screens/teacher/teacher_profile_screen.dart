@@ -17,119 +17,116 @@ class TeacherProfileScreen extends ConsumerStatefulWidget {
 
 class _TeacherProfileScreenState
     extends ConsumerState<TeacherProfileScreen> {
-
-  @override
-  void initState() {
-    super.initState();
-
-    // ✅ Future: Load profile from API / DB
-    // ref.read(teacherProvider.notifier).loadProfile();
-  }
-
   @override
   Widget build(BuildContext context) {
-    final teacher = ref.watch(teacherProvider);
+    final teacherAsync = ref.watch(teacherProvider);
 
-    if (teacher == null) {
-      return const Scaffold(
-        body: Center(child: Text('Teacher data not available')),
-      );
-    }
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Profile'),
-        centerTitle: true,
+    return teacherAsync.when(
+      loading: () => const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          /// Profile Header
-          ProfileHeader(teacher: teacher),
-
-          const SizedBox(height: 16),
-
-          /// Personal Info
-          InfoCard(
-            title: 'Personal Information',
-            children: [
-              InfoRow(
-                icon: Icons.person,
-                label: 'Name',
-                value: teacher.name,
-              ),
-              InfoRow(
-                icon: Icons.email,
-                label: 'Email',
-                value: teacher.email,
-              ),
-              InfoRow(
-                icon: Icons.phone,
-                label: 'Phone',
-                value: teacher.phone,
-              ),
-            ],
+      error: (error, stack) => Scaffold(
+        body: Center(child: Text('Error: $error')),
+      ),
+      data: (teacher) {
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('My Profile'),
+            centerTitle: true,
           ),
-
-          const SizedBox(height: 16),
-
-          /// Academic Info
-          InfoCard(
-            title: 'Academic Information',
+          body: ListView(
+            padding: const EdgeInsets.all(16),
             children: [
-              InfoRow(
-                icon: Icons.book,
-                label: 'Subject',
-                value: teacher.subject,
+              /// Profile Header
+              ProfileHeader(teacher: teacher),
+
+              const SizedBox(height: 16),
+
+              /// Personal Info
+              InfoCard(
+                title: 'Personal Information',
+                children: [
+                  InfoRow(
+                    icon: Icons.person,
+                    label: 'Name',
+                    value: teacher.name,
+                  ),
+                  InfoRow(
+                    icon: Icons.email,
+                    label: 'Email',
+                    value: teacher.email,
+                  ),
+                  InfoRow(
+                    icon: Icons.phone,
+                    label: 'Phone',
+                    value: teacher.phone,
+                  ),
+                ],
               ),
-              InfoRow(
-                icon: Icons.class_,
-                label: 'Classes',
-                value: teacher.classes.join(', '),
+
+              const SizedBox(height: 16),
+
+              /// Academic Info
+              InfoCard(
+                title: 'Academic Information',
+                children: [
+                  InfoRow(
+                    icon: Icons.book,
+                    label: 'Subject',
+                    value: teacher.subject,
+                  ),
+                  InfoRow(
+                    icon: Icons.class_,
+                    label: 'Classes',
+                    value: teacher.classes.join(', '),
+                  ),
+                ],
               ),
-            ],
-          ),
 
-          const SizedBox(height: 16),
+              const SizedBox(height: 16),
 
-          /// Account Actions
-          InfoCard(
-            title: 'Account',
-            children: [
-              ListTile(
-                leading: const Icon(Icons.lock),
-                title: const Text('Change Password'),
-                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Coming soon')),
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.logout, color: Colors.red),
-                title: const Text(
-                  'Logout',
-                  style: TextStyle(color: Colors.red),
-                ),
-                onTap: () async {
-                  await SessionManager.logout();
-
-                  if (!mounted) return;
-
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const LoginScreen(),
+              /// Account Actions
+              InfoCard(
+                title: 'Account',
+                children: [
+                  ListTile(
+                    leading: const Icon(Icons.lock),
+                    title: const Text('Change Password'),
+                    trailing:
+                    const Icon(Icons.arrow_forward_ios, size: 16),
+                    onTap: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Coming soon')),
+                      );
+                    },
+                  ),
+                  ListTile(
+                    leading:
+                    const Icon(Icons.logout, color: Colors.red),
+                    title: const Text(
+                      'Logout',
+                      style: TextStyle(color: Colors.red),
                     ),
-                        (route) => false,
-                  );
-                },
+                    onTap: () async {
+                      await SessionManager.logout();
+
+                      if (!mounted) return;
+
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const LoginScreen(),
+                        ),
+                            (route) => false,
+                      );
+                    },
+                  ),
+                ],
               ),
             ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

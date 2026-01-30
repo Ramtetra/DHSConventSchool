@@ -1,7 +1,11 @@
+import 'package:dhs/screens/admin/admin_attendance_screen.dart';
+import 'package:dhs/screens/admin/admin_fee_report_screen.dart';
+import 'package:dhs/screens/admin/admin_teacher_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../screens/auth/auth_provider.dart';
+import '../screens/teacher/teacher_student_list_screen.dart';
 import 'drawer_items.dart';
 
 class AdminDrawer extends ConsumerWidget   {
@@ -37,12 +41,16 @@ class AdminDrawer extends ConsumerWidget   {
               Navigator.pop(context);
             },
           ),
-
           DrawerItem(
             icon: Icons.groups,
             title: "Students",
             onTap: () {
-              Navigator.pushNamed(context, "/studentList");
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const TeacherStudentListScreen(),
+                ),
+              );
             },
           ),
 
@@ -50,7 +58,10 @@ class AdminDrawer extends ConsumerWidget   {
             icon: Icons.school,
             title: "Teachers",
             onTap: () {
-              Navigator.pushNamed(context, "/teacherList");
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const AdminTeacherListScreen()),
+            );
             },
           ),
 
@@ -58,7 +69,12 @@ class AdminDrawer extends ConsumerWidget   {
             icon: Icons.fact_check,
             title: "Attendance",
             onTap: () {
-              Navigator.pushNamed(context, "/attendanceReport");
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const AdminAttendanceScreen(),
+                ),
+              );
             },
           ),
 
@@ -66,7 +82,11 @@ class AdminDrawer extends ConsumerWidget   {
             icon: Icons.payments,
             title: "Fee Report",
             onTap: () {
-              Navigator.pushNamed(context, "/feeReport");
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => const AdminFeeReportScreen(),),
+              );
             },
           ),
 
