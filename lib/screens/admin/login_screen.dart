@@ -1,10 +1,8 @@
-import 'package:dhs/screens/admin/splash_screen.dart';
 import 'package:dhs/screens/student/student_dashboard_screen.dart';
 import 'package:dhs/screens/teacher/teacher_dashboard_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../utils/session_manager.dart';
-import '../auth/auth_provider.dart';
 import 'admin_dashboard.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -18,53 +16,77 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
+  // ✅ Role dropdown state
+  String? selectedRole; // admin, teacher, student
+
   void _login() async {
-    final username = usernameController.text.trim();
     final password = passwordController.text.trim();
 
-    if (password != '1234') {
-      _error();
+    if (selectedRole == null) {
+      _showMessage("Please select role");
       return;
     }
 
-    if (username == 'admin') {
-      await SessionManager.saveLogin(UserRole.admin);
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const AdminDashboardScreen()),
-      );
+    if (password != '1234') {
+      _showMessage("Invalid password");
+      return;
     }
-    else if (username == 'teacher') {
-      await SessionManager.saveLogin(UserRole.teacher);
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const TeacherDashboardScreen()),
-      );
+
+    // ✅ Convert String to UserRole enum
+    UserRole role;
+
+    switch (selectedRole) {
+      case 'admin':
+        role = UserRole.admin;
+        break;
+      case 'teacher':
+        role = UserRole.teacher;
+        break;
+      case 'student':
+        role = UserRole.student;
+        break;
+      default:
+        _showMessage("Invalid role selected");
+        return;
     }
-    else if (username == 'student') {
-      await SessionManager.saveLogin(UserRole.student);
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const StudentDashboardScreen()),
-      );
+
+    // ✅ SAVE SESSION (NOW CORRECT TYPE)
+    await SessionManager.saveLogin(role);
+
+    // ✅ Navigate
+    Widget targetScreen;
+
+    switch (role) {
+      case UserRole.admin:
+        targetScreen = const AdminDashboardScreen();
+        break;
+      case UserRole.teacher:
+        targetScreen = const TeacherDashboardScreen();
+        break;
+      case UserRole.student:
+        targetScreen = const StudentDashboardScreen();
+        break;
     }
-    else {
-      _error();
-    }
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => targetScreen),
+          (route) => false,
+    );
   }
 
 
 
-
-  void _error() {
+  void _showMessage(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Invalid login credentials"),
+      SnackBar(
+        content: Text(msg),
         backgroundColor: Colors.red,
       ),
     );
   }
 
+  // ================= UI =================
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -99,12 +121,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             size: 40, color: Colors.white),
                       ),
                       const SizedBox(height: 16),
+
                       Text(
                         "DHS Convent School",
                         style: theme.textTheme.headlineSmall
                             ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 6),
+
                       Text(
                         "Login to continue",
                         style: theme.textTheme.bodyMedium
@@ -112,11 +136,38 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                       const SizedBox(height: 30),
 
+                      // ✅ ROLE DROPDOWN
+                      DropdownButtonFormField<String>(
+                        value: selectedRole,
+                        decoration: InputDecoration(
+                          labelText: "Login As",
+                          prefixIcon: const Icon(Icons.person_pin),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        items: const [
+                          DropdownMenuItem(
+                              value: "admin", child: Text("Admin")),
+                          DropdownMenuItem(
+                              value: "teacher", child: Text("Teacher")),
+                          DropdownMenuItem(
+                              value: "student", child: Text("Student")),
+                        ],
+                        onChanged: (val) {
+                          setState(() {
+                            selectedRole = val;
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 16),
+
                       TextFormField(
                         controller: usernameController,
                         decoration: InputDecoration(
                           labelText: "Email / Mobile",
-                          prefixIcon: const Icon(Icons.person_outline),
+                          prefixIcon:
+                          const Icon(Icons.person_outline),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(14),
                           ),
@@ -129,7 +180,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         obscureText: true,
                         decoration: InputDecoration(
                           labelText: "Password",
-                          prefixIcon: const Icon(Icons.lock_outline),
+                          prefixIcon:
+                          const Icon(Icons.lock_outline),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(14),
                           ),
@@ -147,8 +199,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               borderRadius: BorderRadius.circular(14),
                             ),
                           ),
-                          child: const Text("LOGIN",
-                              style: TextStyle(fontSize: 16)),
+                          child: const Text(
+                            "LOGIN",
+                            style: TextStyle(fontSize: 16),
+                          ),
                         ),
                       ),
 

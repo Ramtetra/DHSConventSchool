@@ -1,11 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'screens/admin/splash_screen.dart';
 
+/*Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+ await dotenv.load(fileName: ".env");
+  runApp(const ProviderScope(child: MyApp()));
+}*/
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  try {
+    await dotenv.load(fileName: "assets/.env");
+    debugPrint(".env loaded successfully");
+  } catch (e) {
+    debugPrint("Error loading .env: $e");
+  }
+
   runApp(const ProviderScope(child: MyApp()));
 }
 

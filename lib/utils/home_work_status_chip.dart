@@ -14,8 +14,7 @@ class HomeworkStatusChip extends StatelessWidget {
       case HomeworkStatus.late:
         return Colors.red;
       case HomeworkStatus.pending:
-      default:
-        return Colors.orange;
+      return Colors.orange;
     }
   }
 
@@ -26,8 +25,7 @@ class HomeworkStatusChip extends StatelessWidget {
       case HomeworkStatus.late:
         return Icons.warning_amber_rounded;
       case HomeworkStatus.pending:
-      default:
-        return Icons.schedule;
+      return Icons.schedule;
     }
   }
 
@@ -38,8 +36,7 @@ class HomeworkStatusChip extends StatelessWidget {
       case HomeworkStatus.late:
         return "Late";
       case HomeworkStatus.pending:
-      default:
-        return "Pending";
+      return "Pending";
     }
   }
 

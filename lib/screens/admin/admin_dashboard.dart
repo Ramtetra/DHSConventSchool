@@ -13,30 +13,46 @@ import 'login_screen.dart';
 
 class AdminDashboardScreen extends ConsumerStatefulWidget {
   const AdminDashboardScreen({super.key});
+
   @override
-  ConsumerState<AdminDashboardScreen> createState() => _AdminDashboardScreenState();
+  ConsumerState<AdminDashboardScreen> createState() =>
+      _AdminDashboardScreenState();
 }
 
-class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
+class _AdminDashboardScreenState
+    extends ConsumerState<AdminDashboardScreen> {
+
   @override
   void initState() {
     super.initState();
-    _checkSession(); // ✅ runs once when screen opens
+    _verifyAdminSession(); // ✅ Guard
   }
-  Future<void> _checkSession() async {
+
+  // ================= SESSION GUARD =================
+  Future<void> _verifyAdminSession() async {
     final loggedIn = await SessionManager.isLoggedIn();
-    final role = await SessionManager.getRole();
-    print("getLogiIn:: $loggedIn");
-    print("getRole:: $role");
-/*    if (!loggedIn || role != 'admin') {
-      if (!mounted) return;
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
-            (route) => false,
-      );
-    }*/
+    final role = await SessionManager.getUserRole();
+
+    debugPrint("AdminDashboard -> loggedIn: $loggedIn, role: $role");
+
+    if (!mounted) return;
+
+    // ❌ Not logged in OR not admin → force to login
+    if (!loggedIn || role != UserRole.admin) {
+      await SessionManager.logout();
+      _forceToLogin();
+    }
   }
+
+  void _forceToLogin() {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => const LoginScreen()),
+          (route) => false,
+    );
+  }
+
+  // ================= UI =================
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -49,16 +65,18 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
             icon: const Icon(Icons.notifications_outlined),
             onPressed: () {},
           ),
-          /* const Padding(
-            padding: EdgeInsets.only(right: 12),
-            child: CircleAvatar(
-              radius: 16,
-              child: Icon(Icons.person, size: 18),
-            ),
-          )*/
+
+          // ✅ LOGOUT BUTTON
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+              await SessionManager.logout();
+              _forceToLogin();
+            },
+          ),
         ],
       ),
-      drawer: const AdminDrawer(), // ✅ ADD THIS
+      drawer: const AdminDrawer(),
 
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -66,7 +84,6 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
 
-            // 👋 Welcome
             Text(
               "Welcome, Admin 👋",
               style: theme.textTheme.titleLarge?.copyWith(
@@ -75,7 +92,6 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
             ),
             const SizedBox(height: 16),
 
-            // 📊 KPI CARDS
             GridView.count(
               crossAxisCount: 2,
               shrinkWrap: true,
@@ -112,7 +128,6 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
 
             const SizedBox(height: 24),
 
-            // ⚡ QUICK ACTIONS
             Text(
               "Quick Actions",
               style: theme.textTheme.titleMedium
@@ -126,47 +141,58 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
               physics: const NeverScrollableScrollPhysics(),
               children: [
                 ActionButton(
-                  icon: Icons.person_add, label: "Add Student", onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const AddStudentScreen(),
-                    ),
-                  );
-                },),
+                  icon: Icons.person_add,
+                  label: "Add Student",
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const AddStudentScreen(),
+                      ),
+                    );
+                  },
+                ),
                 ActionButton(
-                  icon: Icons.person_add_alt, label: "Add Teacher", onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const AddTeacherScreen(),
-                    ),
-                  );
-                },),
+                  icon: Icons.person_add_alt,
+                  label: "Add Teacher",
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const AddTeacherScreen(),
+                      ),
+                    );
+                  },
+                ),
                 ActionButton(
-                  icon: Icons.assignment, label: "Attendance", onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const AdminAttendanceScreen(),
-                    ),
-                  );
-                },),
+                  icon: Icons.assignment,
+                  label: "Attendance",
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const AdminAttendanceScreen(),
+                      ),
+                    );
+                  },
+                ),
                 ActionButton(
-                  icon: Icons.receipt_long, label: "Fee Report", onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const AdminFeeStructureScreen(),
-                    ),
-                  );
-                },),
+                  icon: Icons.receipt_long,
+                  label: "Fee Report",
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const AdminFeeStructureScreen(),
+                      ),
+                    );
+                  },
+                ),
               ],
             ),
 
             const SizedBox(height: 24),
 
-            // 📈 REPORTS
             Text(
               "Reports & Control",
               style: theme.textTheme.titleMedium
@@ -189,7 +215,6 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
 
             const SizedBox(height: 24),
 
-            // 📢 NOTICE
             Card(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
@@ -199,16 +224,14 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                 title: const Text("Notice / Circular"),
                 subtitle:
                 const Text("School will remain closed on Friday."),
-                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                trailing:
+                const Icon(Icons.arrow_forward_ios, size: 16),
                 onTap: () {},
               ),
             ),
           ],
         ),
       ),
-
     );
   }
-
-
 }

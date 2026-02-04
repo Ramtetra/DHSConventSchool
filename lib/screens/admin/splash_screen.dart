@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:dhs/utils/session_manager.dart';
 import '../admin/admin_dashboard.dart';
 import '../teacher/teacher_dashboard_screen.dart';
 import '../student/student_dashboard_screen.dart';
+import '../../utils/session_manager.dart';
 import 'login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -39,27 +39,23 @@ class _SplashScreenState extends State<SplashScreen>
     await Future.delayed(const Duration(seconds: 2));
 
     final isLoggedIn = await SessionManager.isLoggedIn();
-    final role = await SessionManager.getRole();
+    final role = await SessionManager.getUserRole();
 
     if (!mounted) return;
 
-    Widget target;
+    Widget target = const LoginScreen();
 
-    if (!isLoggedIn) {
-      target = const LoginScreen();
-    } else {
+    if (isLoggedIn && role != null) {
       switch (role) {
-        case 'admin':
+        case UserRole.admin:
           target = const AdminDashboardScreen();
           break;
-        case 'teacher':
+        case UserRole.teacher:
           target = const TeacherDashboardScreen();
           break;
-        case 'student':
+        case UserRole.student:
           target = const StudentDashboardScreen();
           break;
-        default:
-          target = const LoginScreen();
       }
     }
 
@@ -84,14 +80,10 @@ class _SplashScreenState extends State<SplashScreen>
           opacity: _fadeAnimation,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(
-                Icons.school_rounded,
-                size: 90,
-                color: Colors.white,
-              ),
-              const SizedBox(height: 16),
-              const Text(
+            children: const [
+              Icon(Icons.school_rounded, size: 90, color: Colors.white),
+              SizedBox(height: 16),
+              Text(
                 'DHS',
                 style: TextStyle(
                   fontSize: 34,
@@ -100,16 +92,16 @@ class _SplashScreenState extends State<SplashScreen>
                   letterSpacing: 1.5,
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               Text(
                 'Digital School System',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.9),
+                  color: Colors.white70,
                   fontSize: 16,
                 ),
               ),
-              const SizedBox(height: 30),
-              const CircularProgressIndicator(
+              SizedBox(height: 30),
+              CircularProgressIndicator(
                 color: Colors.white,
                 strokeWidth: 2,
               ),

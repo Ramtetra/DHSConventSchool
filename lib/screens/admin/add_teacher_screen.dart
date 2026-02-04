@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../requestmodel/add_teacher_request.dart';
+import '../../services/teacher_api_service.dart';
+
 class AddTeacherScreen extends ConsumerStatefulWidget {
   const AddTeacherScreen({super.key});
 
@@ -10,6 +13,30 @@ class AddTeacherScreen extends ConsumerStatefulWidget {
 
 class _AddTeacherScreenState extends ConsumerState<AddTeacherScreen> {
   final _formKey = GlobalKey<FormState>();
+  final service = TeacherApiService();
+
+  // Controllers
+  final _nameCtrl = TextEditingController();
+  final _qualificationCtrl = TextEditingController();
+  final _mobileCtrl = TextEditingController();
+  final _emailCtrl = TextEditingController();
+  final _addressCtrl = TextEditingController();
+
+  // Dropdown State
+  String? selectedGender;
+  String? selectedExperience;
+  String? selectedSubject;
+  String? selectedClass;
+
+  @override
+  void dispose() {
+    _nameCtrl.dispose();
+    _qualificationCtrl.dispose();
+    _mobileCtrl.dispose();
+    _emailCtrl.dispose();
+    _addressCtrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +47,7 @@ class _AddTeacherScreenState extends ConsumerState<AddTeacherScreen> {
         title: const Text("Add Teacher"),
       ),
 
-      // ✅ FIXED SAVE BUTTON (never hides)
+      // Fixed Save Button
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -42,16 +69,15 @@ class _AddTeacherScreenState extends ConsumerState<AddTeacherScreen> {
         ),
       ),
 
-      // ✅ ONLY FORM SCROLLS
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 50),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 80),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
 
-              // 👤 Avatar
+              // Avatar
               Center(
                 child: CircleAvatar(
                   radius: 40,
@@ -63,18 +89,23 @@ class _AddTeacherScreenState extends ConsumerState<AddTeacherScreen> {
               const SizedBox(height: 24),
 
               _sectionTitle("Personal Information"),
-              _inputField("Teacher Name"),
-              _dropdownField("Gender", ["Male", "Female"]),
-              _inputField("Date of Birth", icon: Icons.calendar_today),
+              _inputField("Teacher Name", controller: _nameCtrl),
+              _dropdownField(
+                "Gender",
+                ["Male", "Female"],
+                selectedGender,
+                    (val) => setState(() => selectedGender = val),
+              ),
 
               const SizedBox(height: 20),
 
               _sectionTitle("Professional Details"),
-              _inputField("Employee ID"),
-              _inputField("Qualification"),
+              _inputField("Qualification", controller: _qualificationCtrl),
               _dropdownField(
                 "Experience",
                 ["0-2 Years", "3-5 Years", "5+ Years"],
+                selectedExperience,
+                    (val) => setState(() => selectedExperience = val),
               ),
 
               const SizedBox(height: 20),
@@ -82,11 +113,15 @@ class _AddTeacherScreenState extends ConsumerState<AddTeacherScreen> {
               _sectionTitle("Subjects & Classes"),
               _dropdownField(
                 "Subject",
-                ["Maths", "Science", "English", "Computer"],
+                ["Math", "English", "Hindi", "Physics", "Chemistry"],
+                selectedSubject,
+                    (val) => setState(() => selectedSubject = val),
               ),
               _dropdownField(
                 "Class Assigned",
                 ["1", "2", "3", "4", "5"],
+                selectedClass,
+                    (val) => setState(() => selectedClass = val),
               ),
 
               const SizedBox(height: 20),
@@ -94,13 +129,15 @@ class _AddTeacherScreenState extends ConsumerState<AddTeacherScreen> {
               _sectionTitle("Contact Details"),
               _inputField(
                 "Mobile Number",
+                controller: _mobileCtrl,
                 keyboard: TextInputType.phone,
               ),
               _inputField(
                 "Email",
+                controller: _emailCtrl,
                 keyboard: TextInputType.emailAddress,
               ),
-              _inputField("Address"),
+              _inputField("Address", controller: _addressCtrl),
             ],
           ),
         ),
@@ -108,19 +145,70 @@ class _AddTeacherScreenState extends ConsumerState<AddTeacherScreen> {
     );
   }
 
-  // 🔹 SAVE HANDLER (ready for API / provider)
-  void _onSave() {
-    if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Teacher Added Successfully")),
+  // ================= SAVE =================
+
+  Future<void> _onSave() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    try {
+      final request = AddTeacherRequest(
+        teacherName: _nameCtrl.text.trim(),
+        qualification: _qualificationCtrl.text.trim(),
+        experience: selectedExperience ?? "0-2 Years",
+        gender: selectedGender ?? "Male",
+        mobile: _mobileCtrl.text.trim(),
+        email: _emailCtrl.text.trim(),
+        password: "123456", // you can auto-generate
+        address: _addressCtrl.text.trim(),
+        classes: [selectedClass ?? "1"],
+        subjects: [selectedSubject ?? "Math"],
+        assignedClasses: ["${selectedClass ?? "1"}A"],
       );
 
-      // 👉 Later:
-      // ref.read(addTeacherProvider.notifier).submit(data);
+      _showLoading();
+
+      final res = await service.addTeacher(request);
+
+      if (mounted) Navigator.pop(context);
+
+      if (res.success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              "Teacher Added Successfully (${res.data?.userId})",
+            ),
+          ),
+        );
+
+        Navigator.pop(context); // Go back
+      } else {
+        _showError(res.message);
+      }
+    } catch (e) {
+      if (mounted) Navigator.pop(context);
+      _showError(e.toString());
     }
   }
 
-  // 🔹 SECTION TITLE
+  // ================= UI HELPERS =================
+
+  void _showLoading() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+  }
+
+  void _showError(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(msg),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+
   Widget _sectionTitle(String title) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
@@ -134,15 +222,16 @@ class _AddTeacherScreenState extends ConsumerState<AddTeacherScreen> {
     );
   }
 
-  // 🔹 INPUT FIELD
   Widget _inputField(
       String label, {
+        TextEditingController? controller,
         IconData? icon,
         TextInputType keyboard = TextInputType.text,
       }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: TextFormField(
+        controller: controller,
         keyboardType: keyboard,
         decoration: InputDecoration(
           labelText: label,
@@ -157,11 +246,16 @@ class _AddTeacherScreenState extends ConsumerState<AddTeacherScreen> {
     );
   }
 
-  // 🔹 DROPDOWN FIELD
-  Widget _dropdownField(String label, List<String> items) {
+  Widget _dropdownField(
+      String label,
+      List<String> items,
+      String? value,
+      Function(String?) onChanged,
+      ) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: DropdownButtonFormField<String>(
+        value: value,
         decoration: InputDecoration(
           labelText: label,
           border: OutlineInputBorder(
@@ -176,7 +270,7 @@ class _AddTeacherScreenState extends ConsumerState<AddTeacherScreen> {
           ),
         )
             .toList(),
-        onChanged: (_) {},
+        onChanged: onChanged,
         validator: (value) => value == null ? "Required" : null,
       ),
     );
