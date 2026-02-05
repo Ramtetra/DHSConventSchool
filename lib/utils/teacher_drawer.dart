@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import 'drawer_items.dart';
+import 'logout_dialog.dart';
+
 class TeacherDrawer extends StatelessWidget {
   const TeacherDrawer({super.key});
 
@@ -29,9 +32,15 @@ class TeacherDrawer extends StatelessWidget {
           _DrawerItem(Icons.menu_book, "Homework", () {}),
           _DrawerItem(Icons.edit_note, "Marks Entry", () {}),
           _DrawerItem(Icons.people, "My Classes", () {}),
-          const Divider(),
           _DrawerItem(Icons.settings, "Settings", () {}),
-          _DrawerItem(Icons.logout, "Logout", () {}, color: Colors.red),
+          DrawerItem(
+            icon: Icons.logout,
+            title: "Logout",
+            onTap: () {
+              Navigator.pop(context); // close drawer
+              showLogoutDialog(context);
+            },
+          ),
         ],
       ),
     );

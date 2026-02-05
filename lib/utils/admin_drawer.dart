@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../screens/auth/auth_provider.dart';
 import '../screens/teacher/teacher_student_list_screen.dart';
 import 'drawer_items.dart';
+import 'logout_dialog.dart';
 
 class AdminDrawer extends ConsumerWidget   {
   const AdminDrawer({super.key});
@@ -111,10 +112,9 @@ class AdminDrawer extends ConsumerWidget   {
           DrawerItem(
             icon: Icons.logout,
             title: "Logout",
-            color: Colors.red,
             onTap: () {
-              Navigator.pop(context);
-              ref.read(authProvider.notifier).logout();
+              Navigator.pop(context); // close drawer
+              showLogoutDialog(context);
             },
           ),
         ],

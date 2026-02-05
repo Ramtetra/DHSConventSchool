@@ -4,8 +4,11 @@ import 'package:dhs/screens/student/student_time_table_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../utils/drawer_items.dart';
+import '../../utils/logout_dialog.dart';
 import '../../utils/stat_card.dart';
 import '../../utils/future_title.dart';
+import '../auth/auth_provider.dart';
 
 class StudentDashboardScreen extends ConsumerStatefulWidget {
   const StudentDashboardScreen({super.key});
@@ -37,7 +40,9 @@ class _StudentDashboardScreenState
       drawer: _buildDrawer(context),
 
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        //padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 80),
+
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -237,16 +242,15 @@ class _StudentDashboardScreenState
           _drawerItem(Icons.event_note, "Exam Schedule", () {}),
           _drawerItem(Icons.bar_chart, "Results", () {}),
           _drawerItem(Icons.person, "Profile", () {}),
-          _drawerItem(Icons.logout_outlined, "Logout", () {}),
+          DrawerItem(
+            icon: Icons.logout,
+            title: "Logout",
+            onTap: () {
+              Navigator.pop(context); // close drawer
+              showLogoutDialog(context);
+            },
+          ),
 
-          const Spacer(),
-
-          const Divider(),
-
-          _drawerItem(Icons.logout, "Logout", () {
-            Navigator.pop(context);
-            Navigator.pushReplacementNamed(context, '/');
-          }),
         ],
       ),
     );
