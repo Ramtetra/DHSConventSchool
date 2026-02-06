@@ -6,36 +6,43 @@ import '../screens/admin/login_screen.dart';
 Future<void> showLogoutDialog(BuildContext context) {
   return showDialog(
     context: context,
-    useRootNavigator: true, // 🔥 CRITICAL
     barrierDismissible: false,
-    builder: (dialogContext) {
+    builder: (BuildContext dialogContext) {
       return AlertDialog(
         title: const Text('Logout'),
         content: const Text('Do you want to logout?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(dialogContext, rootNavigator: true).pop(),
+            onPressed: () {
+              Navigator.of(dialogContext, rootNavigator: true).pop();
+            },
             child: const Text('No'),
           ),
           ElevatedButton(
             onPressed: () async {
-              debugPrint('YES clicked');
+              try {
+                debugPrint('YES clicked');
 
-              // Close dialog (ROOT)
-              Navigator.of(dialogContext, rootNavigator: true).pop();
+                // Close dialog first
+                Navigator.of(dialogContext, rootNavigator: true).pop();
 
-              // Clear session
-              await SessionManager.logout();
-              debugPrint('Session cleared');
+                // 🔥 SAFETY DELAY
+                await Future.delayed(const Duration(milliseconds: 100));
 
-              if (!context.mounted) return;
+                // Clear session safely
+                await SessionManager.logout();
+                debugPrint('Session cleared');
 
-              // Navigate to Login (ROOT)
-              Navigator.of(context, rootNavigator: true)
-                  .pushAndRemoveUntil(
-                MaterialPageRoute(builder: (_) => const LoginScreen()),
-                    (route) => false,
-              );
+                // ✅ Navigate to LoginScreen using dialogContext (always valid)
+                Navigator.of(dialogContext, rootNavigator: true)
+                    .pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (_) => const LoginScreen()),
+                      (route) => false,
+                );
+              } catch (e, stack) {
+                debugPrint('LOGOUT ERROR: $e');
+                debugPrint('STACK: $stack');
+              }
             },
             child: const Text('Yes'),
           ),
@@ -44,3 +51,4 @@ Future<void> showLogoutDialog(BuildContext context) {
     },
   );
 }
+

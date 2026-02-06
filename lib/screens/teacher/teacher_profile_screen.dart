@@ -7,15 +7,15 @@ import '../../utils/profile_header.dart';
 import '../../utils/session_manager.dart';
 import '../admin/login_screen.dart';
 
-class TeacherProfileScreen extends ConsumerStatefulWidget {
+/*class TeacherProfileScreen extends ConsumerStatefulWidget {
   const TeacherProfileScreen({super.key});
 
   @override
   ConsumerState<TeacherProfileScreen> createState() =>
       _TeacherProfileScreenState();
-}
+}*/
 
-class _TeacherProfileScreenState
+/*class _TeacherProfileScreenState
     extends ConsumerState<TeacherProfileScreen> {
   @override
   Widget build(BuildContext context) {
@@ -129,4 +129,4 @@ class _TeacherProfileScreenState
       },
     );
   }
-}
+}*/

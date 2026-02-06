@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../models/teacher_model.dart';
+import '../../providers/teacher_provider.dart';
 import '../../utils/teacher_card.dart';
+import 'add_teacher_screen.dart';
 
 class AdminTeacherListScreen extends ConsumerStatefulWidget {
   const AdminTeacherListScreen({super.key});
@@ -14,86 +14,52 @@ class AdminTeacherListScreen extends ConsumerStatefulWidget {
 
 class _AdminTeacherListScreenState
     extends ConsumerState<AdminTeacherListScreen> {
-
   final TextEditingController _searchController = TextEditingController();
 
   String selectedDepartment = 'All';
 
-  final List<String> departmentFilters = [
+  final List<String> departmentFilters = const [
     'All',
-    'Mathematics',
-    'Science',
+    'Math',
     'English',
     'Hindi',
-    'Computer',
+    'Physics',
+    'Chemistry',
   ];
 
-  /// Mock Data (Replace with API)
-  final List<TeacherModel> allTeachers = [
-    TeacherModel(
-      id: '1',
-      name: 'Mr. Rajesh Sharma',
-      subject: 'Mathematics',
-      email: 'rajesh@school.com',
-      phone: '9876543210',
-      avatarUrl: '',
-      status: TeacherStatus.active,
-    ),
-    TeacherModel(
-      id: '2',
-      name: 'Ms. Neha Verma',
-      subject: 'Science',
-      email: 'neha@school.com',
-      phone: '9876500000',
-      avatarUrl: '',
-      status: TeacherStatus.active,
-    ),
-    TeacherModel(
-      id: '3',
-      name: 'Mr. Amit Kumar',
-      subject: 'English',
-      email: 'amit@school.com',
-      phone: '9876511111',
-      avatarUrl: '',
-      status: TeacherStatus.inactive,
-    ),
-  ];
-
-  List<TeacherModel> get filteredTeachers {
-    return allTeachers.where((t) {
-      final matchDept =
-          selectedDepartment == 'All' || t.subject == selectedDepartment;
-
-      final matchSearch = t.name
-          .toLowerCase()
-          .contains(_searchController.text.toLowerCase());
-
-      return matchDept && matchSearch;
-    }).toList();
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final teacherAsync = ref.watch(teacherListProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Teachers'),
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.download),
-            tooltip: 'Export',
+            icon: const Icon(Icons.refresh),
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Export coming soon')),
-              );
+              ref.invalidate(teacherListProvider);
             },
           ),
         ],
       ),
 
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          // TODO: Navigate to Add Teacher Screen
+        onPressed: () async {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const AddTeacherScreen()),
+          );
+
+          // Refresh after coming back
+          ref.invalidate(teacherListProvider);
         },
         icon: const Icon(Icons.person_add_alt_1),
         label: const Text('Add Teacher'),
@@ -101,7 +67,7 @@ class _AdminTeacherListScreenState
 
       body: Column(
         children: [
-          /// 🔍 Search
+          // 🔍 Search
           Padding(
             padding: const EdgeInsets.all(16),
             child: TextField(
@@ -117,7 +83,7 @@ class _AdminTeacherListScreenState
             ),
           ),
 
-          /// 🏷 Department Filters
+          // 🏷 Filters
           SizedBox(
             height: 44,
             child: ListView.separated(
@@ -142,37 +108,59 @@ class _AdminTeacherListScreenState
 
           const SizedBox(height: 12),
 
-          /// 👨‍🏫 Teacher List
+          // 👨‍🏫 Teacher List (API)
           Expanded(
-            child: RefreshIndicator(
-              onRefresh: () async {
-                // TODO: API reload
-                await Future.delayed(const Duration(seconds: 1));
-              },
-              child: filteredTeachers.isEmpty
-                  ? const Center(child: Text('No teachers found'))
-                  : ListView.separated(
-                padding: const EdgeInsets.all(16),
-                itemCount: filteredTeachers.length,
-                separatorBuilder: (_, __) =>
-                const SizedBox(height: 8),
-                itemBuilder: (context, index) {
-                  final teacher = filteredTeachers[index];
+            child: teacherAsync.when(
+              loading: () => const Center(
+                child: CircularProgressIndicator(),
+              ),
+              error: (err, _) => Center(
+                child: Text('Error: $err'),
+              ),
+              data: (teachers) {
+                final filtered = teachers.where((t) {
+                  final matchSearch = t.teacherName
+                      ?.toLowerCase()
+                      .contains(_searchController.text.toLowerCase()) ??
+                      false;
 
-                  return TeacherCard(
-                    teacher: teacher,
-                    onTap: () {
-                      // TODO: Navigate to Teacher Detail Screen
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content:
-                          Text('Open ${teacher.name} profile'),
-                        ),
+                  final matchDept = selectedDepartment == 'All' ||
+                      (t.subjects?.contains(selectedDepartment) ?? false);
+
+                  return matchSearch && matchDept;
+                }).toList();
+
+                if (filtered.isEmpty) {
+                  return const Center(child: Text('No teachers found'));
+                }
+
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    ref.invalidate(teacherListProvider);
+                  },
+                  child: ListView.separated(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: filtered.length,
+                    separatorBuilder: (_, __) =>
+                    const SizedBox(height: 8),
+                    itemBuilder: (context, index) {
+                      final teacher = filtered[index];
+
+                      return TeacherCard(
+                        teacher: teacher,
+                        onTap: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                  'Open ${teacher.teacherName} profile'),
+                            ),
+                          );
+                        },
                       );
                     },
-                  );
-                },
-              ),
+                  ),
+                );
+              },
             ),
           ),
         ],

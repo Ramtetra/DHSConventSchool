@@ -10,6 +10,7 @@ class AddTeacherRequest {
   final List<String> classes;
   final List<String> subjects;
   final List<String> assignedClasses;
+  final String imageBase64;
 
   AddTeacherRequest({
     required this.teacherName,
@@ -23,6 +24,7 @@ class AddTeacherRequest {
     required this.classes,
     required this.subjects,
     required this.assignedClasses,
+    required this.imageBase64,
   });
 
   Map<String, dynamic> toJson() {
@@ -38,6 +40,7 @@ class AddTeacherRequest {
       "classes": classes,
       "subjects": subjects,
       "assignedClasses": assignedClasses,
+      "imageBase64": imageBase64,
     };
   }
 }

@@ -1,17 +1,34 @@
-import 'package:dhs/models/teacher_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/teacher_profile_model.dart';
+import '../models/teacher_model.dart';
+import '../network/dio_client.dart';
+import '../repository/teacher_repository.dart';
+import '../requestmodel/add_teacher_request.dart';
+import '../services/teacher_api_service.dart';
 
-final teacherProvider = FutureProvider<TeacherProfileModel>((ref) async {
-  // 🔹 Simulate API / DB call
-  await Future.delayed(const Duration(seconds: 1));
+/// API
+final teacherApiServiceProvider = Provider<TeacherApiService>((ref) {
+  final dio = ref.read(dioProvider);
+  return TeacherApiService(dio);
+});
 
-  // 🔹 Replace with real API response later
-  return TeacherProfileModel(
-    name: 'Rahul Sharma',
-    email: 'rahul@gmail.com',
-    phone: '9876543210',
-    subject: 'Mathematics',
-    classes: ['Class 8', 'Class 9', 'Class 10'],
-  );
+/// Repository
+final teacherRepositoryProvider = Provider<TeacherRepository>((ref) {
+  final api = ref.read(teacherApiServiceProvider);
+  return TeacherRepository(api);
+});
+
+/// GET LIST
+final teacherListProvider = FutureProvider<List<TeacherModel>>((ref) async {
+  final repo = ref.read(teacherRepositoryProvider);
+  return repo.getAllTeachers();
+});
+
+/// ADD TEACHER (Command)
+final addTeacherProvider =
+FutureProvider.family<void, AddTeacherRequest>((ref, request) async {
+  final repo = ref.read(teacherRepositoryProvider);
+  await repo.addTeacher(request);
+
+  // Refresh list after add
+  ref.invalidate(teacherListProvider);
 });

@@ -163,12 +163,12 @@ class _TeacherDashboardScreenState
                   );
                 },),
                 TeacherActionTile(icon: Icons.person, label: "Profile",onTap: () {
-                  Navigator.push(
+                 /* Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (_) => const TeacherProfileScreen(),
                     ),
-                  );
+                  );*/
                 },),
               ],
             ),

@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../providers/teacher_provider.dart';
 import '../../requestmodel/add_teacher_request.dart';
 import '../../services/teacher_api_service.dart';
+import '../../widgets/profile_image_picker_sheet.dart';
 
 class AddTeacherScreen extends ConsumerStatefulWidget {
   const AddTeacherScreen({super.key});
@@ -13,7 +17,7 @@ class AddTeacherScreen extends ConsumerStatefulWidget {
 
 class _AddTeacherScreenState extends ConsumerState<AddTeacherScreen> {
   final _formKey = GlobalKey<FormState>();
-  final service = TeacherApiService();
+  //final service = TeacherApiService();
 
   // Controllers
   final _nameCtrl = TextEditingController();
@@ -27,6 +31,9 @@ class _AddTeacherScreenState extends ConsumerState<AddTeacherScreen> {
   String? selectedExperience;
   String? selectedSubject;
   String? selectedClass;
+
+  File? _profileImageFile;
+  String? _profileBase64;
 
   @override
   void dispose() {
@@ -70,19 +77,29 @@ class _AddTeacherScreenState extends ConsumerState<AddTeacherScreen> {
       ),
 
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 80),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 30),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
-              // Avatar
               Center(
-                child: CircleAvatar(
-                  radius: 40,
-                  backgroundColor: theme.primaryColor.withOpacity(0.1),
-                  child: Icon(Icons.person, size: 40, color: theme.primaryColor),
+                child: GestureDetector(
+                  onTap: () => _onChangeProfileImage(context),
+                  child: CircleAvatar(
+                    radius: 50,
+                    backgroundImage: _profileImageFile != null
+                        ? FileImage(_profileImageFile!)
+                        : const AssetImage('assets/images/default_user.png')
+                    as ImageProvider,
+                    child: const Align(
+                      alignment: Alignment.bottomRight,
+                      child: CircleAvatar(
+                        radius: 16,
+                        child: Icon(Icons.camera_alt, size: 18),
+                      ),
+                    ),
+                  ),
                 ),
               ),
 
@@ -144,46 +161,52 @@ class _AddTeacherScreenState extends ConsumerState<AddTeacherScreen> {
       ),
     );
   }
-
+  void _onChangeProfileImage(BuildContext context) {
+    showProfileImagePickerSheet(
+      context: context,
+      onImagePicked: (result) {
+        setState(() {
+          _profileImageFile = result.file;
+          _profileBase64 = result.base64;
+        });
+        debugPrint('Base64Image $_profileBase64');
+      },
+    );
+  }
   // ================= SAVE =================
 
   Future<void> _onSave() async {
     if (!_formKey.currentState!.validate()) return;
 
-    try {
-      final request = AddTeacherRequest(
-        teacherName: _nameCtrl.text.trim(),
-        qualification: _qualificationCtrl.text.trim(),
-        experience: selectedExperience ?? "0-2 Years",
-        gender: selectedGender ?? "Male",
-        mobile: _mobileCtrl.text.trim(),
-        email: _emailCtrl.text.trim(),
-        password: "123456", // you can auto-generate
-        address: _addressCtrl.text.trim(),
-        classes: [selectedClass ?? "1"],
-        subjects: [selectedSubject ?? "Math"],
-        assignedClasses: ["${selectedClass ?? "1"}A"],
-      );
+    final service = ref.read(teacherApiServiceProvider); // ✅ ref works
 
+    try {
       _showLoading();
 
-      final res = await service.addTeacher(request);
+      final res = await service.addTeacher(
+        AddTeacherRequest(
+          teacherName: _nameCtrl.text.trim(),
+          qualification: _qualificationCtrl.text.trim(),
+          experience: selectedExperience ?? "0-2 Years",
+          gender: selectedGender ?? "Male",
+          mobile: _mobileCtrl.text.trim(),
+          email: _emailCtrl.text.trim(),
+          password: "123456",
+          address: _addressCtrl.text.trim(),
+          classes: ["1"],
+          subjects: ["Math"],
+          assignedClasses: ["1A"],
+          imageBase64: _profileBase64 ?? "",
+        ),
+      );
 
       if (mounted) Navigator.pop(context);
 
-      if (res.success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              "Teacher Added Successfully (${res.data?.userId})",
-            ),
-          ),
-        );
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Teacher Added Successfully")),
+      );
 
-        Navigator.pop(context); // Go back
-      } else {
-        _showError(res.message);
-      }
+      Navigator.pop(context);
     } catch (e) {
       if (mounted) Navigator.pop(context);
       _showError(e.toString());

@@ -13,7 +13,7 @@ class TeacherCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isActive = teacher.status == TeacherStatus.active;
+   // final isActive = teacher.status == TeacherStatus.active;
 
     return Card(
       elevation: 1,
@@ -25,22 +25,22 @@ class TeacherCard extends StatelessWidget {
         leading: CircleAvatar(
           radius: 24,
           child: Text(
-            teacher.name.substring(0, 1),
+            teacher.teacherName.substring(0, 1),
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
         title: Text(
-          teacher.name,
+          teacher.teacherName,
           style: const TextStyle(fontWeight: FontWeight.w600),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(teacher.subject),
+            Text(teacher.subjects.first),
             Text(teacher.email),
           ],
         ),
-        trailing: Column(
+       /* trailing: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Chip(
@@ -52,7 +52,7 @@ class TeacherCard extends StatelessWidget {
               ),
             ),
           ],
-        ),
+        ),*/
       ),
     );
   }

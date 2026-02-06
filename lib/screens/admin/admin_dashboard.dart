@@ -79,7 +79,8 @@ class _AdminDashboardScreenState
       drawer: const AdminDrawer(),
 
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+       // padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 80),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -125,8 +126,6 @@ class _AdminDashboardScreenState
                 ),
               ],
             ),
-
-            const SizedBox(height: 24),
 
             Text(
               "Quick Actions",
@@ -191,8 +190,6 @@ class _AdminDashboardScreenState
               ],
             ),
 
-            const SizedBox(height: 24),
-
             Text(
               "Reports & Control",
               style: theme.textTheme.titleMedium
@@ -213,7 +210,7 @@ class _AdminDashboardScreenState
               title: "Exam Management",
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 10),
 
             Card(
               shape: RoundedRectangleBorder(
