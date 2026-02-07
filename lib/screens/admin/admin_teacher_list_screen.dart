@@ -139,7 +139,8 @@ class _AdminTeacherListScreenState
                     ref.invalidate(teacherListProvider);
                   },
                   child: ListView.separated(
-                    padding: const EdgeInsets.all(16),
+                   // padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 50),
                     itemCount: filtered.length,
                     separatorBuilder: (_, __) =>
                     const SizedBox(height: 8),
