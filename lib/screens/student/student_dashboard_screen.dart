@@ -8,7 +8,6 @@ import '../../utils/drawer_items.dart';
 import '../../utils/logout_dialog.dart';
 import '../../utils/stat_card.dart';
 import '../../utils/future_title.dart';
-import '../auth/auth_provider.dart';
 
 class StudentDashboardScreen extends ConsumerStatefulWidget {
   const StudentDashboardScreen({super.key});

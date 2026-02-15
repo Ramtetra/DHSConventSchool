@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import '../../models/teacher_model.dart';
 import '../requestmodel/add_teacher_request.dart';
 import '../services/teacher_api_service.dart';
