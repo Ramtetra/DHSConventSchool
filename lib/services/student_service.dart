@@ -14,13 +14,22 @@ class StudentService {
   final Dio dio;
   StudentService(this.dio);
 
-  Future<StudentResponseModel> addStudent(
-      StudentRequestModel model) async {
+  Future<StudentResponseModel> addStudent(StudentRequestModel model) async {
     final response = await dio.post(
       "/api/admin/add-student",
       data: model.toJson(),
     );
-
     return StudentResponseModel.fromJson(response.data);
+  }
+
+  Future<StudentResponseModel> getAllStudent() async {
+    try {
+      final response = await dio.get('/api/Admin/GetAllStudent');
+      return StudentResponseModel.fromJson(response.data);
+    } on DioException catch (e) {
+      final msg =
+          e.response?.data?['message'] ?? 'Get teachers failed';
+      throw Exception(msg);
+    }
   }
 }
