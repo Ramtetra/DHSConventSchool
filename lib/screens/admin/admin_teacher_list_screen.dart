@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/teacher_provider.dart';
 import '../../utils/teacher_card.dart';
 import 'add_teacher_screen.dart';
+import 'admin_teacher_profile_screen.dart';
 
 class AdminTeacherListScreen extends ConsumerStatefulWidget {
   const AdminTeacherListScreen({super.key});
@@ -139,7 +140,8 @@ class _AdminTeacherListScreenState
                     ref.invalidate(teacherListProvider);
                   },
                   child: ListView.separated(
-                    padding: const EdgeInsets.all(16),
+                   // padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 50),
                     itemCount: filtered.length,
                     separatorBuilder: (_, __) =>
                     const SizedBox(height: 8),
@@ -149,14 +151,17 @@ class _AdminTeacherListScreenState
                       return TeacherCard(
                         teacher: teacher,
                         onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                  'Open ${teacher.teacherName} profile'),
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => AdminTeacherProfileScreen(
+                                teacher: teacher,
+                              ),
                             ),
                           );
                         },
                       );
+
                     },
                   ),
                 );

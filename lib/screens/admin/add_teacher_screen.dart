@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../providers/teacher_provider.dart';
 import '../../requestmodel/add_teacher_request.dart';
-import '../../services/teacher_api_service.dart';
 import '../../widgets/profile_image_picker_sheet.dart';
 
 class AddTeacherScreen extends ConsumerStatefulWidget {
@@ -25,6 +24,7 @@ class _AddTeacherScreenState extends ConsumerState<AddTeacherScreen> {
   final _mobileCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
   final _addressCtrl = TextEditingController();
+  final _passwordCtrl = TextEditingController();
 
   // Dropdown State
   String? selectedGender;
@@ -34,7 +34,7 @@ class _AddTeacherScreenState extends ConsumerState<AddTeacherScreen> {
 
   File? _profileImageFile;
   String? _profileBase64;
-
+  String? _selectedQualification;
   @override
   void dispose() {
     _nameCtrl.dispose();
@@ -90,7 +90,7 @@ class _AddTeacherScreenState extends ConsumerState<AddTeacherScreen> {
                     radius: 50,
                     backgroundImage: _profileImageFile != null
                         ? FileImage(_profileImageFile!)
-                        : const AssetImage('assets/images/default_user.png')
+                        : const AssetImage('assets/images/user.png')
                     as ImageProvider,
                     child: const Align(
                       alignment: Alignment.bottomRight,
@@ -117,7 +117,7 @@ class _AddTeacherScreenState extends ConsumerState<AddTeacherScreen> {
               const SizedBox(height: 20),
 
               _sectionTitle("Professional Details"),
-              _inputField("Qualification", controller: _qualificationCtrl),
+              _qualificationDropdown(),
               _dropdownField(
                 "Experience",
                 ["0-2 Years", "3-5 Years", "5+ Years"],
@@ -150,6 +150,11 @@ class _AddTeacherScreenState extends ConsumerState<AddTeacherScreen> {
                 keyboard: TextInputType.phone,
               ),
               _inputField(
+                "Password",
+                controller: _passwordCtrl,
+                keyboard: TextInputType.visiblePassword,
+              ),
+              _inputField(
                 "Email",
                 controller: _emailCtrl,
                 keyboard: TextInputType.emailAddress,
@@ -161,6 +166,41 @@ class _AddTeacherScreenState extends ConsumerState<AddTeacherScreen> {
       ),
     );
   }
+
+
+  Widget _qualificationDropdown() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: DropdownButtonFormField<String>(
+        decoration: InputDecoration(
+          labelText: "Qualification",
+          border: OutlineInputBorder(),
+        ),
+        value: _selectedQualification,
+        items: [
+          "10th",
+          "12th",
+          "Diploma",
+          "Graduate",
+          "Post Graduate",
+          "Other"
+        ].map((qual) {
+          return DropdownMenuItem(
+            value: qual,
+            child: Text(qual),
+          );
+        }).toList(),
+        onChanged: (value) {
+          setState(() {
+            _selectedQualification = value;
+          });
+        },
+        validator: (value) =>
+        value == null ? "Please select Qualification" : null,
+      ),
+    );
+  }
+
   void _onChangeProfileImage(BuildContext context) {
     showProfileImagePickerSheet(
       context: context,
@@ -186,26 +226,24 @@ class _AddTeacherScreenState extends ConsumerState<AddTeacherScreen> {
       final res = await service.addTeacher(
         AddTeacherRequest(
           teacherName: _nameCtrl.text.trim(),
-          qualification: _qualificationCtrl.text.trim(),
+          qualification: _selectedQualification ?? "",
           experience: selectedExperience ?? "0-2 Years",
           gender: selectedGender ?? "Male",
           mobile: _mobileCtrl.text.trim(),
           email: _emailCtrl.text.trim(),
-          password: "123456",
+          password: _passwordCtrl.text.trim(),
           address: _addressCtrl.text.trim(),
-          classes: ["1"],
-          subjects: ["Math"],
+          classes: [selectedClass ?? "1"],
+          subjects: [selectedSubject ?? "Math"],
           assignedClasses: ["1A"],
           imageBase64: _profileBase64 ?? "",
         ),
       );
 
       if (mounted) Navigator.pop(context);
-
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Teacher Added Successfully")),
       );
-
       Navigator.pop(context);
     } catch (e) {
       if (mounted) Navigator.pop(context);

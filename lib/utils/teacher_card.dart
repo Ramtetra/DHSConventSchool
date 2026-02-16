@@ -14,6 +14,7 @@ class TeacherCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
    // final isActive = teacher.status == TeacherStatus.active;
+    final imageUrl = teacher.imagePath;
 
     return Card(
       elevation: 1,
@@ -22,12 +23,13 @@ class TeacherCard extends StatelessWidget {
       ),
       child: ListTile(
         onTap: onTap,
+        // 🖼 PROFILE IMAGE
         leading: CircleAvatar(
-          radius: 24,
-          child: Text(
-            teacher.teacherName.substring(0, 1),
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
+          radius: 26,
+          backgroundImage: (imageUrl != null && imageUrl.isNotEmpty)
+              ? NetworkImage(imageUrl) // ✅ FROM API
+              : const AssetImage('assets/images/user.png')
+          as ImageProvider, // ✅ DEFAULT IMAGE
         ),
         title: Text(
           teacher.teacherName,
