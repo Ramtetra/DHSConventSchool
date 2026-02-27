@@ -3,17 +3,17 @@ import '../models/teacher_model.dart';
 import '../network/dio_client.dart';
 import '../repository/teacher_repository.dart';
 import '../requestmodel/add_teacher_request.dart';
-import '../services/teacher_api_service.dart';
+import '../services/teacher_service.dart';
 
 /// API
-final teacherApiServiceProvider = Provider<TeacherApiService>((ref) {
+final teacherServiceProvider = Provider<TeacherService>((ref) {
   final dio = ref.read(dioProvider);
-  return TeacherApiService(dio);
+  return TeacherService(dio);
 });
 
 /// Repository
 final teacherRepositoryProvider = Provider<TeacherRepository>((ref) {
-  final api = ref.read(teacherApiServiceProvider);
+  final api = ref.read(teacherServiceProvider);
   return TeacherRepository(api);
 });
 

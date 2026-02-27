@@ -1,25 +1,33 @@
+import 'package:dhs/models/student_model.dart';
+
+import 'StudentDetailsModel.dart';
+
 class StudentResponseModel {
   final bool success;
   final String message;
-  final String? studentId;
-  final String? studentName;
-  final String? mobile;
+  final List<StudentDetailsModel> data;
 
   StudentResponseModel({
     required this.success,
     required this.message,
-    this.studentId,
-    this.studentName,
-    this.mobile,
+    required this.data,
   });
 
   factory StudentResponseModel.fromJson(Map<String, dynamic> json) {
     return StudentResponseModel(
-      success: json["success"],
-      message: json["message"],
-      studentId: json["data"]?["student_Id"],
-      studentName: json["data"]?["student_Name"],
-      mobile: json["data"]?["mobile"],
+      success: json['success'],
+      message: json['message'],
+      data: (json['data'] as List)
+          .map((e) => StudentDetailsModel.fromJson(e))
+          .toList(),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'success': success,
+      'message': message,
+      'data': data.map((e) => e.toJson()).toList(),
+    };
   }
 }

@@ -79,7 +79,7 @@ class _AdminDashboardScreenState
           ref.refresh(countProvider);
         },
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 80),
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 50),
           physics: const AlwaysScrollableScrollPhysics(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -98,7 +98,7 @@ class _AdminDashboardScreenState
               countAsync.when(
                 loading: () => const Center(
                   child: Padding(
-                    padding: EdgeInsets.all(20),
+                    padding: EdgeInsets.all(10),
                     child: CircularProgressIndicator(),
                   ),
                 ),
@@ -110,8 +110,8 @@ class _AdminDashboardScreenState
                     crossAxisCount: 2,
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 6,
+                    mainAxisSpacing: 6,
                     children: [
                       DashboardCard(
                         title: "Students",
@@ -141,8 +141,6 @@ class _AdminDashboardScreenState
                   );
                 },
               ),
-
-              const SizedBox(height: 24),
 
               // ================= QUICK ACTIONS =================
               Text(
@@ -208,7 +206,6 @@ class _AdminDashboardScreenState
                 ],
               ),
 
-              const SizedBox(height: 24),
 
               // ================= REPORTS =================
               Text(

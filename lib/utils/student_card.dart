@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import '../models/student_model.dart';
-import 'performance_extension.dart';
+import '../responsemodel/StudentDetailsModel.dart';
 
 class StudentCard extends StatelessWidget {
-  final StudentModel student;
+  final StudentDetailsModel student;
   final VoidCallback onTap;
 
   const StudentCard({
@@ -14,42 +13,47 @@ class StudentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final perf = student.performance;
-
     return Card(
       elevation: 1.5,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
       child: ListTile(
         onTap: onTap,
+
+        /// Avatar
         leading: CircleAvatar(
           radius: 24,
-          backgroundImage: student.avatarUrl.isNotEmpty
-              ? NetworkImage(student.avatarUrl)
+          backgroundImage:
+          student.imagePath != null &&
+              student.imagePath!.isNotEmpty
+              ? NetworkImage(student.imagePath!)
               : null,
-          child: student.avatarUrl.isEmpty
-              ? Text(student.name[0])
+          child: (student.imagePath == null ||
+              student.imagePath!.isEmpty)
+              ? Text(
+            student.studentName.isNotEmpty
+                ? student.studentName[0]
+                .toUpperCase()
+                : '?',
+          )
               : null,
         ),
-        title: Text(student.name,
-            style: const TextStyle(fontWeight: FontWeight.w600)),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('${student.className} • Roll No: ${student.rollNo}'),
-            const SizedBox(height: 4),
-            Row(
-              children: [
-                Icon(perf.icon, size: 16, color: perf.color),
-                const SizedBox(width: 4),
-                Text(
-                  perf.label,
-                  style: TextStyle(color: perf.color),
-                ),
-              ],
-            )
-          ],
+
+        /// Name
+        title: Text(
+          student.studentName,
+          style: const TextStyle(
+              fontWeight: FontWeight.w600),
         ),
-        trailing: const Icon(Icons.chevron_right),
+
+        /// Class + Roll
+        subtitle: Text(
+          'Class ${student.classes} • Roll No: ${student.studentId}',
+        ),
+
+        trailing:
+        const Icon(Icons.chevron_right),
       ),
     );
   }

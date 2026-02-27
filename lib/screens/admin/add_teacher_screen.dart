@@ -218,7 +218,7 @@ class _AddTeacherScreenState extends ConsumerState<AddTeacherScreen> {
   Future<void> _onSave() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final service = ref.read(teacherApiServiceProvider); // ✅ ref works
+    final service = ref.read(teacherServiceProvider); // ✅ ref works
 
     try {
       _showLoading();

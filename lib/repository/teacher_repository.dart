@@ -1,18 +1,18 @@
 import '../../models/teacher_model.dart';
 import '../requestmodel/add_teacher_request.dart';
-import '../services/teacher_api_service.dart';
+import '../services/teacher_service.dart';
 
 class TeacherRepository {
-  final TeacherApiService _api;
+  final TeacherService teacherService;
 
-  TeacherRepository(this._api);
+  TeacherRepository(this.teacherService);
 
   Future<void> addTeacher(AddTeacherRequest request) async {
-    await _api.addTeacher(request);
+    await teacherService.addTeacher(request);
   }
 
   Future<List<TeacherModel>> getAllTeachers() async {
-    final res = await _api.getAllTeachers();
+    final res = await teacherService.getAllTeachers();
 
     if (!res.success) {
       throw Exception(res.data);
