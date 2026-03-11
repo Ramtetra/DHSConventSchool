@@ -2,6 +2,7 @@ import 'package:dhs/screens/student/student_dashboard_screen.dart';
 import 'package:dhs/screens/teacher/teacher_dashboard_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../providers/auth_provider.dart';
 import '../../utils/session_manager.dart';
 import 'admin_dashboard.dart';
 
@@ -20,6 +21,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   String? selectedRole; // admin, teacher, student
 
   void _login() async {
+
+    final email = usernameController.text.trim();
     final password = passwordController.text.trim();
 
     if (selectedRole == null) {
@@ -27,54 +30,69 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       return;
     }
 
-    if (password != '1234') {
-      _showMessage("Invalid password");
-      return;
-    }
+    try {
 
-    // ✅ Convert String to UserRole enum
-    UserRole role;
+      final result = await ref.read(loginProvider({
+        "email": email,
+        "password": password,
+        "role": selectedRole!
+      }).future);
 
-    switch (selectedRole) {
-      case 'admin':
-        role = UserRole.admin;
-        break;
-      case 'teacher':
-        role = UserRole.teacher;
-        break;
-      case 'student':
-        role = UserRole.student;
-        break;
-      default:
-        _showMessage("Invalid role selected");
+      if (!result.success) {
+        _showMessage(result.message);
         return;
+      }
+
+      // API role
+      String apiRole = result.data.role;
+
+      UserRole role;
+
+      switch (apiRole.toLowerCase()) {
+        case "admin":
+          role = UserRole.admin;
+          break;
+        case "teacher":
+          role = UserRole.teacher;
+          break;
+        case "student":
+          role = UserRole.student;
+          break;
+        default:
+          _showMessage("Invalid role");
+          return;
+      }
+
+      // Save Session
+      await SessionManager.saveLogin(role);
+
+      Widget targetScreen;
+
+      switch (role) {
+        case UserRole.admin:
+          targetScreen = const AdminDashboardScreen();
+          break;
+
+        case UserRole.teacher:
+          targetScreen = const TeacherDashboardScreen();
+          break;
+
+        case UserRole.student:
+          targetScreen = const StudentDashboardScreen();
+          break;
+      }
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => targetScreen),
+            (route) => false,
+      );
+
+    } catch (e) {
+
+      _showMessage("Login failed");
     }
-
-    // ✅ SAVE SESSION (NOW CORRECT TYPE)
-    await SessionManager.saveLogin(role);
-
-    // ✅ Navigate
-    Widget targetScreen;
-
-    switch (role) {
-      case UserRole.admin:
-        targetScreen = const AdminDashboardScreen();
-        break;
-      case UserRole.teacher:
-        targetScreen = const TeacherDashboardScreen();
-        break;
-      case UserRole.student:
-        targetScreen = const StudentDashboardScreen();
-        break;
-    }
-
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (_) => targetScreen),
-          (route) => false,
-    );
   }
-
 
 
   void _showMessage(String msg) {
