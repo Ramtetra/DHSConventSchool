@@ -62,9 +62,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           _showMessage("Invalid role");
           return;
       }
-
+      String name = result.data.name;
+      String email = result.data.email;
+      String mobile = result.data.mobile;
       // Save Session
-      await SessionManager.saveLogin(role);
+      await SessionManager.saveLogin(
+        role: role,
+        name: name,
+        email: email,
+        mobile: mobile,
+      );
 
       Widget targetScreen;
 

@@ -24,12 +24,14 @@ class UserData {
 
   final String name;
   final String email;
+  final String mobile;
   final String role;
   final String address;
 
   UserData({
     required this.name,
     required this.email,
+    required this.mobile,
     required this.role,
     required this.address,
   });
@@ -39,6 +41,7 @@ class UserData {
     return UserData(
       name: json['name'],
       email: json['email'],
+      mobile: json['mobile'],
       role: json['role'],
       address: json['address'],
     );
