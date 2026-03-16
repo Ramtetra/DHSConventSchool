@@ -43,7 +43,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         return;
       }
 
-      // API role
       String apiRole = result.data.role;
 
       UserRole role;
@@ -62,14 +61,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           _showMessage("Invalid role");
           return;
       }
+
       String name = result.data.name;
-      String email = result.data.email;
+      String userEmail = result.data.email;
       String mobile = result.data.mobile;
-      // Save Session
+
       await SessionManager.saveLogin(
         role: role,
         name: name,
-        email: email,
+        email: userEmail,
         mobile: mobile,
       );
 
@@ -96,7 +96,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       );
 
     } catch (e) {
-
       _showMessage("Login failed");
     }
   }
