@@ -1,4 +1,3 @@
-import 'package:dhs/models/student_model.dart';
 
 import 'StudentDetailsModel.dart';
 

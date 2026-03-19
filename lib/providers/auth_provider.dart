@@ -18,7 +18,6 @@ FutureProvider.family<LoginResponse, Map<String, String>>((ref, data) async {
 
   return repo.login(
     data["email"]!,
-    data["mobile"]!,
     data["password"]!,
     data["role"]!
   );

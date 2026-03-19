@@ -20,9 +20,8 @@ class AdminDashboardScreen extends ConsumerStatefulWidget {
       _AdminDashboardScreenState();
 }
 
-class _AdminDashboardScreenState
-    extends ConsumerState<AdminDashboardScreen> {
-
+class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
+String name="";
   @override
   void initState() {
     super.initState();
@@ -33,7 +32,8 @@ class _AdminDashboardScreenState
   Future<void> _verifyAdminSession() async {
     final loggedIn = await SessionManager.isLoggedIn();
     final role = await SessionManager.getUserRole();
-
+     name = (await SessionManager.getUserName())!;
+   print("getName:: $name");
     if (!mounted) return;
 
     if (!loggedIn || role != UserRole.admin) {
@@ -87,18 +87,18 @@ class _AdminDashboardScreenState
 
               // ================= WELCOME =================
               Text(
-                "Welcome, Admin 👋",
+                "Welcome, $name 👋",
                 style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 16),
+            //  const SizedBox(height: 16),
 
               // ================= DASHBOARD COUNT =================
               countAsync.when(
                 loading: () => const Center(
                   child: Padding(
-                    padding: EdgeInsets.all(10),
+                    padding: EdgeInsets.all(5),
                     child: CircularProgressIndicator(),
                   ),
                 ),

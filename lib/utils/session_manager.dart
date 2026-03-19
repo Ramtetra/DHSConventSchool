@@ -1,5 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../models/user_session.dart';
+
 enum UserRole { admin, teacher, student }
 
 class SessionManager {
@@ -8,6 +10,7 @@ class SessionManager {
   static const String _keyUserName = "user_name";
   static const String _keyUserEmail = "user_email";
   static const String _keyUserMobile = "user_mobile";
+  static const String _keyUserAddress = "user_address";
 
   // ✅ Save login session
   static Future<void> saveLogin({
@@ -15,6 +18,7 @@ class SessionManager {
     required String name,
     required String email,
     required String mobile,
+    required String address,
   }) async {
     final prefs = await SharedPreferences.getInstance();
 
@@ -23,6 +27,7 @@ class SessionManager {
     await prefs.setString(_keyUserName, name);
     await prefs.setString(_keyUserEmail, email);
     await prefs.setString(_keyUserMobile, mobile);
+    await prefs.setString(_keyUserAddress, address);
   }
 
   // ================= GETTERS =================
@@ -42,6 +47,12 @@ class SessionManager {
     return prefs.getString(_keyUserMobile);
   }
 
+
+  static Future<String?> getUserAddress() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_keyUserAddress);
+  }
+
   static Future<UserRole?> getUserRole() async {
     final prefs = await SharedPreferences.getInstance();
     final roleStr = prefs.getString(_keyUserRole);
@@ -51,6 +62,25 @@ class SessionManager {
     return UserRole.values.firstWhere(
           (e) => e.name == roleStr,
       orElse: () => UserRole.student,
+    );
+  }
+
+  static Future<UserSession?> getUser() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    final name = prefs.getString(_keyUserName);
+    final email = prefs.getString(_keyUserEmail);
+    final mobile = prefs.getString(_keyUserMobile);
+    final address = prefs.getString(_keyUserAddress);
+    final role = prefs.getString(_keyUserRole);
+
+
+    return UserSession(
+      name: name ?? "",
+      email: email ?? "",
+      mobile: mobile ?? "",
+      address: address ?? "",
+      role: role ?? "",
     );
   }
 

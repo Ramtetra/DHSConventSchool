@@ -4,6 +4,7 @@ import 'package:dhs/screens/student/student_time_table_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../providers/teacher_provider.dart';
 import '../../utils/drawer_items.dart';
 import '../../utils/logout_dialog.dart';
 import '../../utils/stat_card.dart';
@@ -23,7 +24,7 @@ class _StudentDashboardScreenState
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
+    final userAsync = ref.watch(userProvider); // 👈 IMPORTANT
     return Scaffold(
       appBar: AppBar(
         title: const Text("Student Dashboard"),
@@ -64,7 +65,7 @@ class _StudentDashboardScreenState
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Rahul Sharma",
+                          userAsync.value!.name,
                           style: theme.textTheme.titleMedium
                               ?.copyWith(fontWeight: FontWeight.bold),
                         ),

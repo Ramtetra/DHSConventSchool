@@ -10,7 +10,6 @@ class AuthRepository {
 
   Future<LoginResponse> login(
       String email,
-      String mobile,
       String password,
       String role,
       ) async {

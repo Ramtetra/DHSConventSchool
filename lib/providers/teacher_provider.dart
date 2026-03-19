@@ -1,9 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/teacher_model.dart';
+import '../models/user_session.dart';
 import '../network/dio_client.dart';
 import '../repository/teacher_repository.dart';
 import '../requestmodel/add_teacher_request.dart';
 import '../services/teacher_service.dart';
+import '../utils/session_manager.dart';
 
 /// API
 final teacherServiceProvider = Provider<TeacherService>((ref) {
@@ -21,6 +23,11 @@ final teacherRepositoryProvider = Provider<TeacherRepository>((ref) {
 final teacherListProvider = FutureProvider<List<TeacherModel>>((ref) async {
   final repo = ref.read(teacherRepositoryProvider);
   return repo.getAllTeachers();
+});
+
+
+final userProvider = FutureProvider<UserSession?>((ref) async {
+  return await SessionManager.getUser();
 });
 
 /// ADD TEACHER (Command)

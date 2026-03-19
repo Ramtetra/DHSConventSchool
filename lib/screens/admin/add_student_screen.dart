@@ -36,7 +36,6 @@ class _AddStudentScreenState
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final studentState = ref.watch(addStudentProvider);
 
     /// ✅ Listen for success / error

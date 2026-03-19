@@ -67,6 +67,14 @@ class _StudentAttendanceTileState extends State<StudentAttendanceTile> {
         setState(() {
           status = value;
         });
+
+        // ✅ SHOW MESSAGE
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("${widget.rollNo} is $value"),
+            duration: const Duration(seconds: 1),
+          ),
+        );
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),

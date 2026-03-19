@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../providers/teacher_provider.dart';
 import 'drawer_items.dart';
 import 'logout_dialog.dart';
 
-class TeacherDrawer extends StatelessWidget {
+class TeacherDrawer extends ConsumerWidget {
   const TeacherDrawer({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userAsync = ref.watch(userProvider); // ✅ correct
+    String? name=userAsync.value?.name;
     return Drawer(
-      child: Column(
+    child: Column(
         children: [
 
           UserAccountsDrawerHeader(
@@ -21,7 +25,7 @@ class TeacherDrawer extends StatelessWidget {
             currentAccountPicture: const CircleAvatar(
               child: Icon(Icons.person, size: 36),
             ),
-            accountName: const Text("Anita Sharma"),
+            accountName: Text("$name"),
             accountEmail: const Text("Maths Teacher"),
           ),
 

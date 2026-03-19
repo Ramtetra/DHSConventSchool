@@ -17,12 +17,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  // ✅ Role dropdown state
-  String? selectedRole; // admin, teacher, student
+  String? selectedRole;
 
+  bool isLoading = false;
+
+  // ================= LOGIN FUNCTION =================
   void _login() async {
-
-    final email = usernameController.text.trim();
+    final input = usernameController.text.trim();
     final password = passwordController.text.trim();
 
     if (selectedRole == null) {
@@ -30,23 +31,44 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       return;
     }
 
-    try {
+    if (input.isEmpty) {
+      _showMessage("Enter email or mobile");
+      return;
+    }
 
+    if (password.isEmpty) {
+      _showMessage("Enter password");
+      return;
+    }
+
+    // ✅ Detect email or mobile
+    bool isEmail = RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(input);
+    bool isMobile = RegExp(r'^[0-9]{10}$').hasMatch(input);
+
+    if (!isEmail && !isMobile) {
+      _showMessage("Enter valid email or 10-digit mobile number");
+      return;
+    }
+
+    setState(() => isLoading = true);
+
+    try {
       final result = await ref.read(loginProvider({
-        "email": email,
+        "email": input,   // ✅ ALWAYS PASS INPUT
         "password": password,
         "role": selectedRole!
       }).future);
 
       if (!result.success) {
         _showMessage(result.message);
+        setState(() => isLoading = false);
         return;
       }
 
+      // ✅ Role mapping
       String apiRole = result.data.role;
 
       UserRole role;
-
       switch (apiRole.toLowerCase()) {
         case "admin":
           role = UserRole.admin;
@@ -59,31 +81,29 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           break;
         default:
           _showMessage("Invalid role");
+          setState(() => isLoading = false);
           return;
       }
 
-      String name = result.data.name;
-      String userEmail = result.data.email;
-      String mobile = result.data.mobile;
-
+      // ✅ Save session
       await SessionManager.saveLogin(
         role: role,
-        name: name,
-        email: userEmail,
-        mobile: mobile,
+        name: result.data.name,
+        email: result.data.email,
+        mobile: result.data.mobile,
+        address: result.data.address,
       );
 
+      // ✅ Navigate
       Widget targetScreen;
 
       switch (role) {
         case UserRole.admin:
           targetScreen = const AdminDashboardScreen();
           break;
-
         case UserRole.teacher:
           targetScreen = const TeacherDashboardScreen();
           break;
-
         case UserRole.student:
           targetScreen = const StudentDashboardScreen();
           break;
@@ -94,13 +114,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         MaterialPageRoute(builder: (_) => targetScreen),
             (route) => false,
       );
-
     } catch (e) {
       _showMessage("Login failed");
     }
+
+    setState(() => isLoading = false);
   }
 
-
+  // ================= SNACKBAR =================
   void _showMessage(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -160,7 +181,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                       const SizedBox(height: 30),
 
-                      // ✅ ROLE DROPDOWN
+                      // ROLE DROPDOWN
                       DropdownButtonFormField<String>(
                         value: selectedRole,
                         decoration: InputDecoration(
@@ -186,12 +207,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                       const SizedBox(height: 16),
 
+                      // EMAIL / MOBILE
                       TextFormField(
                         controller: usernameController,
+                        keyboardType: TextInputType.emailAddress,
                         decoration: InputDecoration(
                           labelText: "Email / Mobile",
-                          prefixIcon:
-                          const Icon(Icons.person_outline),
+                          prefixIcon: const Icon(Icons.person_outline),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(14),
                           ),
@@ -199,13 +221,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                       const SizedBox(height: 16),
 
+                      // PASSWORD
                       TextFormField(
                         controller: passwordController,
                         obscureText: true,
                         decoration: InputDecoration(
                           labelText: "Password",
-                          prefixIcon:
-                          const Icon(Icons.lock_outline),
+                          prefixIcon: const Icon(Icons.lock_outline),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(14),
                           ),
@@ -213,17 +235,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                       const SizedBox(height: 20),
 
+                      // LOGIN BUTTON
                       SizedBox(
                         width: double.infinity,
                         height: 52,
                         child: ElevatedButton(
-                          onPressed: _login,
+                          onPressed: isLoading ? null : _login,
                           style: ElevatedButton.styleFrom(
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(14),
                             ),
                           ),
-                          child: const Text(
+                          child: isLoading
+                              ? const CircularProgressIndicator(
+                              color: Colors.white)
+                              : const Text(
                             "LOGIN",
                             style: TextStyle(fontSize: 16),
                           ),

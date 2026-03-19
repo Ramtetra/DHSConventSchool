@@ -7,6 +7,7 @@ import 'package:dhs/screens/teacher/teacher_student_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../providers/teacher_provider.dart';
 import '../../utils/class_title.dart';
 import '../../utils/teacher_action_tile.dart';
 import '../../utils/teacher_drawer.dart';
@@ -19,12 +20,11 @@ class TeacherDashboardScreen extends ConsumerStatefulWidget {
       _TeacherDashboardScreenState();
 }
 
-class _TeacherDashboardScreenState
-    extends ConsumerState<TeacherDashboardScreen> {
+class _TeacherDashboardScreenState extends ConsumerState<TeacherDashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
+    final userAsync = ref.watch(userProvider); // 👈 IMPORTANT
     return Scaffold(
       appBar: AppBar(
         title: const Text("Teacher Dashboard"),
@@ -64,12 +64,13 @@ class _TeacherDashboardScreenState
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Anita Sharma",
+                          userAsync.value!.name,
                           style: theme.textTheme.titleMedium
                               ?.copyWith(fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 4),
                         Text(
+
                           "Maths • Class 8–10",
                           style: theme.textTheme.bodySmall,
                         ),
