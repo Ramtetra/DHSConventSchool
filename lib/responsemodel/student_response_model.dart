@@ -13,20 +13,20 @@ class StudentResponseModel {
   });
 
   factory StudentResponseModel.fromJson(Map<String, dynamic> json) {
-    return StudentResponseModel(
-      success: json['success'],
-      message: json['message'],
-      data: (json['data'] as List)
-          .map((e) => StudentDetailsModel.fromJson(e))
-          .toList(),
-    );
-  }
+    List<StudentDetailsModel> list = [];
 
-  Map<String, dynamic> toJson() {
-    return {
-      'success': success,
-      'message': message,
-      'data': data.map((e) => e.toJson()).toList(),
-    };
+    if (json['data'] is List) {
+      list = (json['data'] as List)
+          .map((e) => StudentDetailsModel.fromJson(e))
+          .toList();
+    } else if (json['data'] is Map) {
+      list = [StudentDetailsModel.fromJson(json['data'])];
+    }
+
+    return StudentResponseModel(
+      success: json['success'] ?? false,
+      message: json['message'] ?? '',
+      data: list,
+    );
   }
 }

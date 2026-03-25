@@ -37,8 +37,8 @@ class StudentDetailsModel {
 
   factory StudentDetailsModel.fromJson(Map<String, dynamic> json) {
     return StudentDetailsModel(
-      studentId: json['studentId'] ?? '',
-      studentName: json['studentName'] ?? '',
+      studentId: json['student_Id'] ?? json['studentId'] ?? '',
+      studentName: json['student_Name'] ?? json['studentName'] ?? '',
       dob: json['dob'] ?? '',
       gender: json['gender'] ?? '',
       mobile: json['mobile'] ?? '',
@@ -60,8 +60,8 @@ class StudentDetailsModel {
 
   Map<String, dynamic> toJson() {
     return {
-      "studentId": studentId,
-      "studentName": studentName,
+      "student_Id": studentId,   // ✅ keep consistent with API
+      "student_Name": studentName,
       "dob": dob,
       "gender": gender,
       "mobile": mobile,
