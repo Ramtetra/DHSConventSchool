@@ -7,7 +7,7 @@ class StudentRequestModel {
   final String email;
   final String password;
   final String address;
-  final List<String> classes;
+  final String classes;
   final List<String> section;
   final String imageBase64;
 

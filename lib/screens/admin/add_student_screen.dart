@@ -2,9 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../models/dropdown_item.dart';
 import '../../requestmodel/student_request_model.dart';
 import '../../utils/app_date_picker.dart';
 import '../../providers/student_provider.dart';
+import '../../widgets/app_dropdown.dart';
 import '../../widgets/profile_image_picker_sheet.dart';
 
 class AddStudentScreen extends ConsumerStatefulWidget {
@@ -29,11 +31,15 @@ class _AddStudentScreenState
   final passwordController = TextEditingController();
 
   String? gender;
-  String? selectedClass;
   String? selectedSection;
   String? _profileBase64;
   File? _profileImageFile;
+  List<DropdownItem> classList = [
+    DropdownItem(id: "1", name: "Class 1"),
+    DropdownItem(id: "2", name: "Class 2"),
+  ];
 
+  DropdownItem? selectedClass;
   @override
   Widget build(BuildContext context) {
     final studentState = ref.watch(addStudentProvider);
@@ -129,17 +135,30 @@ class _AddStudentScreenState
 
               Row(
                 children: [
-                  Expanded(
-                    child: _dropdownField(
-                        "Class", ["1", "2", "3", "4"],
-                        onChanged: (val) =>
-                        selectedClass = val),),
+                  Expanded(   // ✅ FIX
+                    child: AppDropdown<DropdownItem>(
+                      label: "Class",
+                      items: classList,
+                      value: selectedClass,
+                      getLabel: (item) => item.name,
+                      onChanged: (val) {
+                        setState(() {
+                          selectedClass = val;
+                        });
+                      },
+                    ),
+                  ),
                   const SizedBox(width: 12),
-                  Expanded(
+
+                  Expanded(   // ✅ already correct but keep consistent
                     child: _dropdownField(
-                        "Section", ["A", "B", "C"],
-                        onChanged: (val) =>
-                        selectedSection = val),),],),
+                      "Section",
+                      ["A", "B", "C"],
+                      onChanged: (val) => selectedSection = val,
+                    ),
+                  ),
+                ],
+              ),
               const SizedBox(width: 10),
               _sectionTitle("Parent Information"),
 
@@ -184,7 +203,7 @@ class _AddStudentScreenState
                         email: emailController.text,
                         password: passwordController.text,
                         address: addressController.text,
-                        classes: [selectedClass ?? "1"],
+                        classes: selectedClass?.id ?? "",   // 🔥 FIX
                         section: [selectedSection ?? "A"],
                         imageBase64: _profileBase64 ?? "",);
                       ref.read(addStudentProvider.notifier).addStudent(model);
