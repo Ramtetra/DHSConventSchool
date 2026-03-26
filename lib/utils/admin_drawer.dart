@@ -15,7 +15,7 @@ class AdminDrawer extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Drawer(
       child: FutureBuilder(
-        future: SessionManager.getUser(),
+        future: SessionManager.getUserSession(),
         builder: (context, snapshot) {
 
           String name = "Admin User";

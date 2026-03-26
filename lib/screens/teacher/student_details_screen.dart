@@ -1,9 +1,9 @@
+// lib/screens/teacher/student_details_screen.dart
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../responsemodel/StudentDetailsModel.dart';
+import '../../models/student_model.dart';
 
-class StudentDetailScreen extends ConsumerStatefulWidget {
-  final StudentDetailsModel student;
+class StudentDetailScreen extends StatelessWidget {
+  final StudentModel student;
 
   const StudentDetailScreen({
     super.key,
@@ -11,185 +11,159 @@ class StudentDetailScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<StudentDetailScreen> createState() =>
-      _StudentDetailScreenState();
-}
-
-class _StudentDetailScreenState
-    extends ConsumerState<StudentDetailScreen> {
-
-  @override
   Widget build(BuildContext context) {
-    final student = widget.student;
-
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-
-          /// 🔥 Modern Gradient AppBar
-          SliverAppBar(
-            expandedHeight: 260,
-            pinned: true,
-            flexibleSpace: FlexibleSpaceBar(
-              background: Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Color(0xFF4A90E2),
-                      Color(0xFF357ABD),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
+      appBar: AppBar(
+        title: const Text('Student Details'),
+        centerTitle: true,
+        elevation: 2,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            // Profile Header Card
+            Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const SizedBox(height: 40),
-
-                    /// Profile Avatar
-                    Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black26,
-                            blurRadius: 12,
-                            offset: Offset(0, 6),
-                          )
-                        ],
-                      ),
-                      child: CircleAvatar(
-                        radius: 50,
-                        backgroundColor: Colors.white,
-                        child: Text(
-                          student.studentName
-                              .substring(0, 1)
-                              .toUpperCase(),
-                          style: const TextStyle(
-                            fontSize: 36,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF357ABD),
-                          ),
+                    // Avatar
+                    CircleAvatar(
+                      radius: 50,
+                      backgroundColor: Colors.indigo.shade100,
+                      child: Text(
+                        student.initials,
+                        style: const TextStyle(
+                          fontSize: 40,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.indigo,
                         ),
                       ),
                     ),
-
-                    const SizedBox(height: 12),
-
-                    /// Name
+                    const SizedBox(height: 16),
+                    // Name
                     Text(
-                      student.studentName,
+                      student.name,
                       style: const TextStyle(
-                        fontSize: 22,
+                        fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
                       ),
                     ),
-
-                    const SizedBox(height: 4),
-
-                    /// Class & Roll
+                    const SizedBox(height: 8),
+                    // Email
                     Text(
-                      "Class ${student.classes} • Roll No: ${student.studentId}",
-                      style: const TextStyle(
-                        color: Colors.white70,
+                      student.email,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    // Class & Section
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.indigo.shade50,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        'Class ${student.className} • Section ${student.section}',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.indigo.shade700,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
             ),
-          ),
 
-          /// 🔥 Body Content
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
+            const SizedBox(height: 16),
 
-                  buildInfoTile(
-                      Icons.school,
-                      "Section",
-                      student.section.join(", ")),
-
-                  buildInfoTile(
-                      Icons.cake,
-                      "Date of Birth",
-                      student.dob.split("T")[0]),
-
-                  buildInfoTile(
-                      Icons.person,
-                      "Gender",
-                      student.gender),
-
-                  buildInfoTile(
-                      Icons.phone,
-                      "Mobile",
-                      student.mobile),
-
-                  buildInfoTile(
-                      Icons.email,
-                      "Email",
-                      student.email),
-
-                  buildInfoTile(
-                      Icons.home,
-                      "Address",
-                      student.address),
-
-                  buildInfoTile(
-                      Icons.family_restroom,
-                      "Parent Name",
-                      student.parentName),
-
-                  buildInfoTile(
-                      Icons.badge,
-                      "Role",
-                      student.role),
-                ],
+            // Personal Information Card
+            Card(
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Personal Information',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const Divider(height: 24),
+                    _buildInfoRow(Icons.phone, 'Mobile', student.mobile),
+                    _buildInfoRow(Icons.email, 'Email', student.email),
+                    _buildInfoRow(Icons.location_on, 'Address', student.address),
+                    _buildInfoRow(Icons.wc, 'Gender', student.gender),
+                    _buildInfoRow(Icons.cake, 'Date of Birth', student.dob),
+                    _buildInfoRow(Icons.family_restroom, 'Parent Name', student.parentName),
+                    _buildInfoRow(Icons.numbers, 'Roll No', student.rollNo),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  /// 🔥 Beautiful Info Tile
-  Widget buildInfoTile(
-      IconData icon, String title, String value) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 14),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.15),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
+  Widget _buildInfoRow(IconData icon, String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: Colors.indigo.shade50,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(
+              icon,
+              size: 20,
+              color: Colors.indigo.shade700,
+            ),
+          ),
+          const SizedBox(width: 12),
+          SizedBox(
+            width: 100,
+            child: Text(
+              label,
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: Colors.grey.shade700,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value.isNotEmpty ? value : 'N/A',
+              style: const TextStyle(
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ),
         ],
-      ),
-      child: ListTile(
-        leading: CircleAvatar(
-          backgroundColor:
-          const Color(0xFF4A90E2).withOpacity(0.1),
-          child: Icon(icon,
-              color: const Color(0xFF4A90E2)),
-        ),
-        title: Text(
-          title,
-          style: const TextStyle(
-              fontWeight: FontWeight.w600),
-        ),
-        subtitle: Text(
-          value.isEmpty ? "-" : value,
-          style: const TextStyle(
-              fontSize: 14),
-        ),
       ),
     );
   }

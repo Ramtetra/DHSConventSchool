@@ -1,56 +1,49 @@
-enum PerformanceLevel { good, average, weak }
-
+// lib/models/student_model.dart
 class StudentModel {
   final String id;
   final String name;
-  final String className;
-  final String rollNo;
-  final String avatarUrl;
-  final PerformanceLevel performance;
-
-  // Full API Data
-  final String dob;
-  final String gender;
-  final String mobile;
   final String email;
+  final String mobile;
   final String address;
+  final String className;
+  final String section;
   final String parentName;
+  final String dob;
+  final String rollNo;
+  final String imagePath;
+  final String gender;
   final String role;
-  final List<String> section;
 
   StudentModel({
     required this.id,
     required this.name,
-    required this.className,
-    required this.rollNo,
-    required this.avatarUrl,
-    required this.performance,
-    required this.dob,
-    required this.gender,
-    required this.mobile,
     required this.email,
+    required this.mobile,
     required this.address,
-    required this.parentName,
-    required this.role,
+    required this.className,
     required this.section,
+    required this.parentName,
+    required this.dob,
+    required this.rollNo,
+    required this.imagePath,
+    required this.gender,
+    required this.role,
   });
 
-  factory StudentModel.fromJson(Map<String, dynamic> json) {
-    return StudentModel(
-      id: json['studentId'],
-      name: json['studentName'],
-      className: "Class ${json['classes']}",
-      rollNo: json['studentId'], // Using studentId as RollNo
-      avatarUrl: '',
-      performance: PerformanceLevel.good,
-      dob: json['dob'],
-      gender: json['gender'],
-      mobile: json['mobile'],
-      email: json['email'],
-      address: json['address'],
-      parentName: json['parentName'],
-      role: json['role'],
-      section: List<String>.from(json['section']),
-    );
+  String get displayInfo {
+    final parts = <String>[];
+    if (className.isNotEmpty) parts.add('Class $className');
+    if (section.isNotEmpty) parts.add('Section $section');
+    if (rollNo.isNotEmpty) parts.add('Roll No: $rollNo');
+    return parts.isNotEmpty ? parts.join(' • ') : 'Student';
+  }
+
+  String get initials {
+    if (name.isEmpty) return 'S';
+    final nameParts = name.trim().split(' ');
+    if (nameParts.length >= 2) {
+      return '${nameParts[0][0]}${nameParts[1][0]}'.toUpperCase();
+    }
+    return name[0].toUpperCase();
   }
 }

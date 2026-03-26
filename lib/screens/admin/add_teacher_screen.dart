@@ -1,8 +1,6 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import '../../providers/teacher_provider.dart';
 import '../../requestmodel/add_teacher_request.dart';
 import '../../widgets/profile_image_picker_sheet.dart';
@@ -17,7 +15,6 @@ class AddTeacherScreen extends ConsumerStatefulWidget {
 class _AddTeacherScreenState extends ConsumerState<AddTeacherScreen> {
   final _formKey = GlobalKey<FormState>();
   //final service = TeacherApiService();
-
   // Controllers
   final _nameCtrl = TextEditingController();
   final _qualificationCtrl = TextEditingController();
@@ -223,7 +220,7 @@ class _AddTeacherScreenState extends ConsumerState<AddTeacherScreen> {
     try {
       _showLoading();
 
-      final res = await service.addTeacher(
+     await service.addTeacher(
         AddTeacherRequest(
           teacherName: _nameCtrl.text.trim(),
           qualification: _selectedQualification ?? "",

@@ -62,7 +62,7 @@ class AdminTeacherProfileScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              teacher.teacherName ?? "N/A",
+              teacher.teacherName,
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -70,13 +70,13 @@ class AdminTeacherProfileScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              teacher.qualification ?? "No Qualification",
+              teacher.qualification,
               style: const TextStyle(color: Colors.grey),
             ),
             const SizedBox(height: 12),
             Chip(
               label: Text(
-                "${teacher.experience ?? "0"} Years Experience",
+                "${teacher.experience} Years Experience",
               ),
             ),
           ],

@@ -26,9 +26,38 @@ final teacherListProvider = FutureProvider<List<TeacherModel>>((ref) async {
 });
 
 
+/*
 final userProvider = FutureProvider<UserSession?>((ref) async {
-  return await SessionManager.getUser();
+  return await SessionManager.getUserSession();
 });
+*/
+
+// teacher_provider.dart
+
+final userProvider = FutureProvider<TeacherModel?>((ref) async {
+  final userSession = await SessionManager.getUserSession();
+
+  if (userSession == null || !userSession.isTeacher) {
+    return null;
+  }
+
+  // Convert UserSession to TeacherModel
+  return TeacherModel(
+    teacherId: userSession.teacherId ?? '',
+    teacherName: userSession.name,
+    email: userSession.email,
+    mobile: userSession.mobile,
+    address: userSession.address,
+    gender: userSession.gender ?? '',
+    qualification: userSession.qualification ?? '',
+    experience: userSession.experience ?? '',
+    imagePath: userSession.imagePath,
+    classes: userSession.classes,
+    subjects: userSession.subjects,
+    assignedClass: userSession.assignedClass,
+  );
+});
+
 
 /// ADD TEACHER (Command)
 final addTeacherProvider =

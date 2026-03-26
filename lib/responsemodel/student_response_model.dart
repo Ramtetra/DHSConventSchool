@@ -1,32 +1,30 @@
-
+// lib/responsemodel/student_response_model.dart
 import 'StudentDetailsModel.dart';
 
 class StudentResponseModel {
   final bool success;
   final String message;
-  final List<StudentDetailsModel> data;
+  final List<StudentDetailsModel>? data;
 
   StudentResponseModel({
     required this.success,
     required this.message,
-    required this.data,
+    this.data,
   });
 
   factory StudentResponseModel.fromJson(Map<String, dynamic> json) {
-    return StudentResponseModel(
-      success: json['success'],
-      message: json['message'],
-      data: (json['data'] as List)
-          .map((e) => StudentDetailsModel.fromJson(e))
-          .toList(),
-    );
-  }
+    List<StudentDetailsModel> students = [];
 
-  Map<String, dynamic> toJson() {
-    return {
-      'success': success,
-      'message': message,
-      'data': data.map((e) => e.toJson()).toList(),
-    };
+    if (json['data'] is List) {
+      students = (json['data'] as List)
+          .map((item) => StudentDetailsModel.fromJson(item))
+          .toList();
+    }
+
+    return StudentResponseModel(
+      success: json['success'] ?? false,
+      message: json['message'] ?? '',
+      data: students,
+    );
   }
 }

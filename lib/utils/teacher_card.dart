@@ -38,7 +38,7 @@ class TeacherCard extends StatelessWidget {
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(teacher.subjects.first),
+            Text(teacher.subjects!.first),
             Text(teacher.email),
           ],
         ),
