@@ -25,11 +25,11 @@ class DashboardCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, color: color, size: 30),
+            Icon(icon, color: color, size: 25),
             const Spacer(),
             Text(value,
                 style: const TextStyle(
-                    fontSize: 22, fontWeight: FontWeight.bold)),
+                    fontSize: 18, fontWeight: FontWeight.bold)),
             Text(title, style: const TextStyle(color: Colors.grey)),
           ],
         ),

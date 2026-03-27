@@ -1,5 +1,6 @@
-// lib/screens/teacher/student_details_screen.dart
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 import '../../models/student_model.dart';
 
 class StudentDetailScreen extends StatelessWidget {
@@ -13,158 +14,159 @@ class StudentDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Student Details'),
-        centerTitle: true,
-        elevation: 2,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            // Profile Header Card
-            Card(
-              elevation: 4,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(20),
+      backgroundColor: const Color(0xFFF5F7FB),
+      body: CustomScrollView(
+        slivers: [
+          /// 🔥 Modern AppBar
+          SliverAppBar(
+            expandedHeight: 220,
+            pinned: true,
+            backgroundColor: Colors.indigo,
+            flexibleSpace: FlexibleSpaceBar(
+              title: Text(student.name),
+              background: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.indigo, Colors.blueAccent],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Avatar
-                    CircleAvatar(
-                      radius: 50,
-                      backgroundColor: Colors.indigo.shade100,
-                      child: Text(
-                        student.initials,
-                        style: const TextStyle(
-                          fontSize: 40,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.indigo,
+                    const SizedBox(height: 40),
+
+                    /// Avatar
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 10,
+                            offset: Offset(0, 4),
+                          )
+                        ],
+                      ),
+                      child: CircleAvatar(
+                        radius: 45,
+                        backgroundColor: Colors.white,
+                        child: Text(
+                          student.initials,
+                          style: const TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.indigo,
+                          ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    // Name
-                    Text(
-                      student.name,
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    // Email
-                    Text(
-                      student.email,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    // Class & Section
+
+                    const SizedBox(height: 10),
+
+                    /// Class badge
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
+                          horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: Colors.indigo.shade50,
+                        color: Colors.white.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
-                        'Class ${student.className} • Section ${student.section}',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.indigo.shade700,
-                          fontWeight: FontWeight.w500,
-                        ),
+                        'Class ${student.className} • ${student.section}',
+                        style: const TextStyle(color: Colors.white),
                       ),
                     ),
                   ],
                 ),
               ),
             ),
-
-            const SizedBox(height: 16),
-
-            // Personal Information Card
-            Card(
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Personal Information',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const Divider(height: 24),
-                    _buildInfoRow(Icons.phone, 'Mobile', student.mobile),
-                    _buildInfoRow(Icons.email, 'Email', student.email),
-                    _buildInfoRow(Icons.location_on, 'Address', student.address),
-                    _buildInfoRow(Icons.wc, 'Gender', student.gender),
-                    _buildInfoRow(Icons.cake, 'Date of Birth', student.dob),
-                    _buildInfoRow(Icons.family_restroom, 'Parent Name', student.parentName),
-                    _buildInfoRow(Icons.numbers, 'Roll No', student.rollNo),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInfoRow(IconData icon, String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        children: [
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: Colors.indigo.shade50,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(
-              icon,
-              size: 20,
-              color: Colors.indigo.shade700,
-            ),
           ),
-          const SizedBox(width: 12),
-          SizedBox(
-            width: 100,
-            child: Text(
-              label,
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: Colors.grey.shade700,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Text(
-              value.isNotEmpty ? value : 'N/A',
-              style: const TextStyle(
-                fontWeight: FontWeight.w500,
+
+          /// 🔥 Body
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  /// Contact Card
+                  _buildCard(
+                    title: "Contact Info",
+                    children: [
+                      _buildTile(Icons.phone, "Mobile", student.mobile),
+                      _buildTile(Icons.email, "Email", student.email),
+                      _buildTile(Icons.location_on, "Address", student.address),
+                    ],
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  /// Personal Card
+                  _buildCard(
+                    title: "Personal Info",
+                    children: [
+                      _buildTile(Icons.wc, "Gender", student.gender),
+                      _buildTile(Icons.cake, "DOB", student.dob),
+                      _buildTile(Icons.family_restroom, "Parent",
+                          student.parentName),
+                      _buildTile(Icons.numbers, "Roll No", student.rollNo),
+                    ],
+                  ),
+                ],
               ),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  /// 🔥 Modern Card
+  Widget _buildCard({required String title, required List<Widget> children}) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.08),
+            blurRadius: 10,
+            spreadRadius: 2,
+          )
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title,
+              style:
+              const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 10),
+          const Divider(),
+          ...children,
+        ],
+      ),
+    );
+  }
+
+  /// 🔥 Info Tile
+  Widget _buildTile(IconData icon, String title, String value) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.indigo.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Icon(icon, color: Colors.indigo),
+      ),
+      title: Text(title,
+          style: const TextStyle(fontWeight: FontWeight.w600)),
+      subtitle: Text(value.isNotEmpty ? value : "N/A"),
     );
   }
 }

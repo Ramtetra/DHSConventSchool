@@ -162,9 +162,9 @@ class _StudentDashboardScreenState extends ConsumerState<StudentDashboardScreen>
             _buildStudentHeader(theme),
             const SizedBox(height: 16),
             _buildStatsSection(theme),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
             _buildQuickAccessSection(theme),
-            const SizedBox(height: 24),
+           // const SizedBox(height: 16),
             _buildUpdatesSection(theme),
           ],
         ),
@@ -329,7 +329,7 @@ class _StudentDashboardScreenState extends ConsumerState<StudentDashboardScreen>
             fontWeight: FontWeight.bold,
           ),
         ),
-        const SizedBox(height: 8),
+       // const SizedBox(height: 8),
         Card(
           elevation: 1,
           child: Column(

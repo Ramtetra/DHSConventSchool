@@ -1,11 +1,11 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/dropdown_item.dart';
 import '../../requestmodel/student_request_model.dart';
 import '../../utils/app_date_picker.dart';
 import '../../providers/student_provider.dart';
+import '../../utils/session_manager.dart';
 import '../../widgets/app_dropdown.dart';
 import '../../widgets/profile_image_picker_sheet.dart';
 
@@ -13,13 +13,12 @@ class AddStudentScreen extends ConsumerStatefulWidget {
   const AddStudentScreen({super.key});
 
   @override
-  ConsumerState<AddStudentScreen> createState() =>
-      _AddStudentScreenState();
+  ConsumerState<AddStudentScreen> createState() => _AddStudentScreenState();
 }
 
-class _AddStudentScreenState
-    extends ConsumerState<AddStudentScreen> {
+class _AddStudentScreenState extends ConsumerState<AddStudentScreen> {
   final _formKey = GlobalKey<FormState>();
+  final role = SessionManager.getUserRole();
 
   // ✅ Controllers (MOVED OUTSIDE BUILD)
   final nameController = TextEditingController();
@@ -29,7 +28,6 @@ class _AddStudentScreenState
   final emailController = TextEditingController();
   final addressController = TextEditingController();
   final passwordController = TextEditingController();
-
   String? gender;
   String? selectedSection;
   String? _profileBase64;
@@ -40,6 +38,7 @@ class _AddStudentScreenState
   ];
 
   DropdownItem? selectedClass;
+
   @override
   Widget build(BuildContext context) {
     final studentState = ref.watch(addStudentProvider);
@@ -48,17 +47,29 @@ class _AddStudentScreenState
     ref.listen(addStudentProvider, (previous, next) {
       next.whenOrNull(
         data: (data) {
-          if (data != null && data.success) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(data.message)),
-            );
-            _formKey.currentState!.reset();
+          if (data != null) {
+            if (data.success == true) {
+              // ✅ SUCCESS
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(data.message ?? "Student Added Successfully"),
+                ),
+              );
+              _formKey.currentState!.reset();
+            } else {
+              // ❌ FAILURE (IMPORTANT FIX)
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(data.message ?? "User already registered"),
+                ),
+              );
+            }
           }
         },
         error: (error, _) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(error.toString())),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(error.toString())));
         },
       );
     });
@@ -81,7 +92,7 @@ class _AddStudentScreenState
                     backgroundImage: _profileImageFile != null
                         ? FileImage(_profileImageFile!)
                         : const AssetImage('assets/images/user.png')
-                    as ImageProvider,
+                              as ImageProvider,
                     child: const Align(
                       alignment: Alignment.bottomRight,
                       child: CircleAvatar(
@@ -97,11 +108,12 @@ class _AddStudentScreenState
 
               _sectionTitle("Student Information"),
 
-              _inputField("Student Name",
-                  controller: nameController),
+              _inputField("Student Name", controller: nameController),
 
-              _dropdownField("Gender", ["Male", "Female"],
-                  onChanged: (val) => gender = val),
+              _dropdownField("Gender", [
+                "Male",
+                "Female",
+              ], onChanged: (val) => gender = val),
 
               /// ✅ Date Picker
               TextFormField(
@@ -109,17 +121,14 @@ class _AddStudentScreenState
                 readOnly: true,
                 decoration: InputDecoration(
                   labelText: "Date of Birth",
-                  prefixIcon:
-                  const Icon(Icons.calendar_today),
+                  prefixIcon: const Icon(Icons.calendar_today),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                validator: (v) =>
-                v == null || v.isEmpty ? "Required" : null,
+                validator: (v) => v == null || v.isEmpty ? "Required" : null,
                 onTap: () async {
-                  final selectedDate =
-                  await AppDatePicker.pickDate(
+                  final selectedDate = await AppDatePicker.pickDate(
                     context: context,
                     format: "yyyy-MM-dd",
                   );
@@ -135,52 +144,58 @@ class _AddStudentScreenState
 
               Row(
                 children: [
-                  Expanded(   // ✅ FIX
-                    child: AppDropdown<DropdownItem>(
-                      label: "Class",
-                      items: classList,
-                      value: selectedClass,
-                      getLabel: (item) => item.name,
-                      onChanged: (val) {
-                        setState(() {
-                          selectedClass = val;
-                        });
-                      },
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 7), // 👈 ADD THIS
+                      child: AppDropdown<DropdownItem>(
+                        label: "Class",
+                        items: classList,
+                        value: selectedClass,
+                        getLabel: (item) => item.name,
+                        onChanged: (val) {
+                          setState(() {
+                            selectedClass = val;
+                          });
+                        },
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
 
-                  Expanded(   // ✅ already correct but keep consistent
-                    child: _dropdownField(
-                      "Section",
-                      ["A", "B", "C"],
-                      onChanged: (val) => selectedSection = val,
-                    ),
+                  Expanded(
+                    child: _dropdownField("Section", [
+                      "A",
+                      "B",
+                      "C",
+                    ], onChanged: (val) => selectedSection = val),
                   ),
                 ],
               ),
               const SizedBox(width: 10),
               _sectionTitle("Parent Information"),
 
-              _inputField("Parent Name",
-                  controller: parentController),
+              _inputField("Parent Name", controller: parentController),
 
-              _inputField("Mobile Number",
-                  controller: mobileController,
-                  keyboard: TextInputType.phone),
+              _inputField(
+                "Mobile Number",
+                controller: mobileController,
+                keyboard: TextInputType.phone,
+              ),
 
-              _inputField("Email",
-                  controller: emailController,
-                  keyboard:
-                  TextInputType.emailAddress),
+              _inputField(
+                "Email",
+                controller: emailController,
+                keyboard: TextInputType.emailAddress,
+              ),
 
-              _inputField("Password",
-                  controller: passwordController,
-                  keyboard:
-                  TextInputType.visiblePassword),
-              _inputField("Address",
-                  controller: addressController),
+              _inputField(
+                "Password",
+                controller: passwordController,
+                keyboard: TextInputType.visiblePassword,
+              ),
+              _inputField("Address", controller: addressController),
               const SizedBox(height: 32),
+
               /// ✅ SAVE BUTTON (Connected to API)
               SizedBox(
                 width: double.infinity,
@@ -189,34 +204,32 @@ class _AddStudentScreenState
                   onPressed: studentState.isLoading
                       ? null
                       : () {
-                    if (_formKey.currentState!
-                        .validate()) {
-                      final model =
-                      StudentRequestModel(
-                        studentName:
-                        nameController.text,
-                        parentName:
-                        parentController.text,
-                        dob: dobController.text,
-                        gender: gender ?? "Male",
-                        mobile: mobileController.text,
-                        email: emailController.text,
-                        password: passwordController.text,
-                        address: addressController.text,
-                        classes: selectedClass?.id ?? "",   // 🔥 FIX
-                        section: [selectedSection ?? "A"],
-                        imageBase64: _profileBase64 ?? "",);
-                      ref.read(addStudentProvider.notifier).addStudent(model);
-                    }
-                  },
+                          if (_formKey.currentState!.validate()) {
+                            final model = StudentRequestModel(
+                              studentName: nameController.text,
+                              parentName: parentController.text,
+                              dob: dobController.text,
+                              gender: gender ?? "Male",
+                              mobile: mobileController.text,
+                              email: emailController.text,
+                              password: passwordController.text,
+                              address: addressController.text,
+                              classes: selectedClass?.id ?? "",
+                              // 🔥 FIX
+                              section: [selectedSection ?? "A"],
+                              imageBase64: _profileBase64 ?? "",
+                            );
+                            ref
+                                .read(addStudentProvider.notifier)
+                                .addStudent(model);
+                          }
+                        },
                   child: studentState.isLoading
-                      ? const CircularProgressIndicator(
-                      color: Colors.white)
+                      ? const CircularProgressIndicator(color: Colors.white)
                       : const Text(
-                    "SAVE STUDENT",
-                    style:
-                    TextStyle(fontSize: 16),
-                  ),
+                          "SAVE STUDENT",
+                          style: TextStyle(fontSize: 16),
+                        ),
                 ),
               ),
             ],
@@ -225,6 +238,7 @@ class _AddStudentScreenState
       ),
     );
   }
+
   void _onChangeProfileImage(BuildContext context) {
     showProfileImagePickerSheet(
       context: context,
@@ -237,24 +251,24 @@ class _AddStudentScreenState
       },
     );
   }
+
   /// 🔹 Section Title
   Widget _sectionTitle(String title) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Text(
         title,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-        ),
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
       ),
     );
   }
 
   /// 🔹 Input Field
-  Widget _inputField(String label,
-      {required TextEditingController controller,
-        TextInputType keyboard = TextInputType.text}) {
+  Widget _inputField(
+    String label, {
+    required TextEditingController controller,
+    TextInputType keyboard = TextInputType.text,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: TextFormField(
@@ -262,40 +276,32 @@ class _AddStudentScreenState
         keyboardType: keyboard,
         decoration: InputDecoration(
           labelText: label,
-          border: OutlineInputBorder(
-            borderRadius:
-            BorderRadius.circular(14),
-          ),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
         ),
         validator: (value) =>
-        value == null || value.isEmpty
-            ? "Required"
-            : null,
+            value == null || value.isEmpty ? "Required" : null,
       ),
     );
   }
 
   /// 🔹 Dropdown Field
   Widget _dropdownField(
-      String label, List<String> items,
-      {required Function(String?) onChanged}) {
+    String label,
+    List<String> items, {
+    required Function(String?) onChanged,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: DropdownButtonFormField<String>(
         decoration: InputDecoration(
           labelText: label,
-          border: OutlineInputBorder(
-            borderRadius:
-            BorderRadius.circular(14),
-          ),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
         ),
         items: items
-            .map((e) =>
-            DropdownMenuItem(value: e, child: Text(e)))
+            .map((e) => DropdownMenuItem(value: e, child: Text(e)))
             .toList(),
         onChanged: onChanged,
-        validator: (value) =>
-        value == null ? "Required" : null,
+        validator: (value) => value == null ? "Required" : null,
       ),
     );
   }
