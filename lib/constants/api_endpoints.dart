@@ -39,7 +39,7 @@ class ApiEndpoints {
   static const String updateUserStatus = '/api/admin/users/{id}/status';
 
   // Attendance Endpoints
-  static const String attendanceBase = '/api/attendance';
+  static const String attendanceCount= 'api/Attendence/AttendenceCount';
   static const String markAttendance = '/api/attendance/mark';
   static const String getAttendanceByDate = '/api/attendance/date/{date}';
   static const String getAttendanceByStudent = '/api/attendance/student/{studentId}';

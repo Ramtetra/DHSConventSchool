@@ -64,7 +64,7 @@ class _TeacherDashboardScreenState extends ConsumerState<TeacherDashboardScreen>
     return RefreshIndicator(
       onRefresh: _refreshDashboard,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 50),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 30),
         physics: const AlwaysScrollableScrollPhysics(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -73,19 +73,14 @@ class _TeacherDashboardScreenState extends ConsumerState<TeacherDashboardScreen>
             _buildTeacherProfileCard(userAsync, theme),
 
             const SizedBox(height: 20),
-
             /// 📊 Today Summary
             _buildStatsSection(),
-
             const SizedBox(height: 24),
-
             /// ⚡ Quick Actions
             _buildQuickActionsSection(theme),
 
-            const SizedBox(height: 24),
-
             /// 🏫 My Classes
-            _buildMyClassesSection(theme),
+            _buildMyClassesSection(),
           ],
         ),
       ),
@@ -195,70 +190,6 @@ class _TeacherDashboardScreenState extends ConsumerState<TeacherDashboardScreen>
                     ],
                   ),
 
-                 // const SizedBox(height: 16),
-
-               /*   // Stats Row
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        _buildStatItem(
-                          value: classes.length.toString(),
-                          label: 'Classes',
-                          icon: Icons.class_,
-                        ),
-                        Container(
-                          width: 1,
-                          height: 30,
-                          color: Colors.white.withOpacity(0.3),
-                        ),
-                        _buildStatItem(
-                          value: subjects.length.toString(),
-                          label: 'Subjects',
-                          icon: Icons.book,
-                        ),
-                        Container(
-                          width: 1,
-                          height: 30,
-                          color: Colors.white.withOpacity(0.3),
-                        ),
-                        _buildStatItem(
-                          value: experience.split(' ').first,
-                          label: 'Experience',
-                          icon: Icons.timeline,
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Classes & Subjects Tags
-                  if (classes.isNotEmpty || subjects.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (classes.isNotEmpty)
-                            _buildTagRow(
-                              icon: Icons.class_,
-                              label: 'Classes',
-                              items: classes,
-                            ),
-                          const SizedBox(height: 8),
-                          if (subjects.isNotEmpty)
-                            _buildTagRow(
-                              icon: Icons.subject,
-                              label: 'Subjects',
-                              items: subjects,
-                            ),
-                        ],
-                      ),
-                    ),*/
                 ],
               ),
             ),
@@ -470,67 +401,237 @@ class _TeacherDashboardScreenState extends ConsumerState<TeacherDashboardScreen>
           ),
         ),
         const SizedBox(height: 12),
-        GridView.count(
-          crossAxisCount: 3,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          childAspectRatio: 0.9,
-          children: [
-            TeacherActionTile(
-              icon: Icons.check_circle,
-              label: "Attendance",
-              onTap: () => _navigateTo(const TeacherAttendanceScreen()),
-            ),
-            TeacherActionTile(
-              icon: Icons.upload_file,
-              label: "Homework",
-              onTap: () => _navigateTo(const TeacherHomeworkScreen()),
-            ),
-            TeacherActionTile(
-              icon: Icons.people,
-              label: "Students",
-              onTap: () => _navigateTo(const TeacherStudentListScreen()),
-            ),
-            TeacherActionTile(
-              icon: Icons.edit_note,
-              label: "Marks Entry",
-              onTap: () => _navigateTo(const TeacherMarkEntryScreen()),
-            ),
-            TeacherActionTile(
-              icon: Icons.notifications,
-              label: "Notices",
-              onTap: () => _navigateTo(const TeacherNoticeScreen()),
-            ),
-            TeacherActionTile(
-              icon: Icons.person,
-              label: "Profile",
-              onTap: () => _editProfile(null),
-            ),
-          ],
-        ),
+        // Quick Actions Grid
+        _buildQuickActionsGrid(theme),
       ],
     );
   }
+
 
   // ==================== MY CLASSES SECTION ====================
-  Widget _buildMyClassesSection(ThemeData theme) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "My Classes",
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 8),
-        const ClassTile(className: "Class 8 A"),
-        const ClassTile(className: "Class 9 B"),
-        const ClassTile(className: "Class 10 C"),
-      ],
+  Widget _buildMyClassesSection() {
+    final classes = [
+      {'name': 'Class 8 A', 'section': 'Science', 'students': 32},
+      {'name': 'Class 9 B', 'section': 'Commerce', 'students': 28},
+      {'name': 'Class 10 C', 'section': 'Arts', 'students': 30},
+    ];
+
+    return ListView.separated(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: classes.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 12),
+      itemBuilder: (context, index) {
+        final classData = classes[index];
+        return _buildClassCard(
+          className: classData['name'] as String,
+          section: classData['section'] as String,
+          students: classData['students'] as int,
+        );
+      },
     );
   }
 
+  Widget _buildQuickActionsGrid(ThemeData theme) {
+    final actions = [
+      {
+        'icon': Icons.check_circle,
+        'label': 'Attendance',
+        'color': Colors.green,
+        'screen': const TeacherAttendanceScreen()
+      },
+      {
+        'icon': Icons.upload_file,
+        'label': 'Homework',
+        'color': Colors.orange,
+        'screen': const TeacherHomeworkScreen()
+      },
+      {
+        'icon': Icons.people,
+        'label': 'Students',
+        'color': Colors.blue,
+        'screen': const TeacherStudentListScreen()
+      },
+      {
+        'icon': Icons.edit_note,
+        'label': 'Marks',
+        'color': Colors.purple,
+        'screen': const TeacherMarkEntryScreen()
+      },
+      {
+        'icon': Icons.notifications,
+        'label': 'Notices',
+        'color': Colors.red,
+        'screen': const TeacherNoticeScreen()
+      },
+      {
+        'icon': Icons.person,
+        'label': 'Profile',
+        'color': Colors.teal,
+        'screen': null
+      },
+    ];
+
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        childAspectRatio: 0.85,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+      ),
+      itemCount: actions.length,
+      itemBuilder: (context, index) {
+        final action = actions[index];
+        return _buildActionCard(
+          icon: action['icon'] as IconData,
+          label: action['label'] as String,
+          color: action['color'] as Color,
+          onTap: () {
+            if (action['screen'] != null) {
+              _navigateTo(action['screen'] as Widget);
+            } else {
+              _editProfile(null);
+            }
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildClassCard({
+    required String className,
+    required String section,
+    required int students,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.08),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => _navigateToClass(className),
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Colors.indigo.shade400, Colors.indigo.shade600],
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(Icons.class_, color: Colors.white, size: 24),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        className,
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey[800],
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(Icons.book, size: 14, color: Colors.grey[500]),
+                          const SizedBox(width: 4),
+                          Text(
+                            section,
+                            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                          ),
+                          const SizedBox(width: 12),
+                          Icon(Icons.people, size: 14, color: Colors.grey[500]),
+                          const SizedBox(width: 4),
+                          Text(
+                            '$students Students',
+                            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(Icons.chevron_right, color: Colors.grey[400]),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+  void _navigateToClass(String className) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Navigating to $className'),
+        duration: const Duration(seconds: 1),
+      ),
+    );
+  }
+  Widget _buildActionCard({
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            color: Colors.white,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, color: color, size: 28),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                label,
+                style: GoogleFonts.poppins(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey[700],
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
   // ==================== HELPER METHODS ====================
   void _navigateTo(Widget screen) {
     Navigator.push(
