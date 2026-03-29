@@ -1,6 +1,8 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../providers/teacher_provider.dart';
 import '../../requestmodel/add_teacher_request.dart';
 import '../../widgets/profile_image_picker_sheet.dart';
@@ -15,6 +17,7 @@ class AddTeacherScreen extends ConsumerStatefulWidget {
 class _AddTeacherScreenState extends ConsumerState<AddTeacherScreen> {
   final _formKey = GlobalKey<FormState>();
   //final service = TeacherApiService();
+
   // Controllers
   final _nameCtrl = TextEditingController();
   final _qualificationCtrl = TextEditingController();
@@ -215,12 +218,12 @@ class _AddTeacherScreenState extends ConsumerState<AddTeacherScreen> {
   Future<void> _onSave() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final service = ref.read(teacherServiceProvider); // ✅ ref works
+    final service = ref.read(teacherServiceProvider);
 
     try {
       _showLoading();
 
-     await service.addTeacher(
+      final res = await service.addTeacher(
         AddTeacherRequest(
           teacherName: _nameCtrl.text.trim(),
           qualification: _selectedQualification ?? "",
@@ -237,11 +240,22 @@ class _AddTeacherScreenState extends ConsumerState<AddTeacherScreen> {
         ),
       );
 
-      if (mounted) Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Teacher Added Successfully")),
-      );
-      Navigator.pop(context);
+      if (!mounted) return;
+
+      Navigator.pop(context); // close loader
+
+      // ✅ CHECK RESPONSE HERE
+      if (res.success == true) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(res.message ?? "Teacher Added Successfully")),
+        );
+        Navigator.pop(context); // go back
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(res.message ?? "User already registered")),
+        );
+      }
+
     } catch (e) {
       if (mounted) Navigator.pop(context);
       _showError(e.toString());
