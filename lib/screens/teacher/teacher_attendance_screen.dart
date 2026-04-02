@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../providers/attendance_pro.dart';
 import '../../utils/attendance_summary_card.dart';
 import '../../utils/student_attendance_title.dart';
 
@@ -74,27 +76,42 @@ class _TeacherAttendanceScreenState extends State<TeacherAttendanceScreen> {
             const SizedBox(height: 20),
 
             /// 📊 Attendance Summary
-            Row(
-              children: const [
-                AttendanceSummaryCard(
-                  title: "Present",
-                  count: "28",
-                  color: Colors.green,
-                ),
-                AttendanceSummaryCard(
-                  title: "Absent",
-                  count: "4",
-                  color: Colors.red,
-                ),
-                AttendanceSummaryCard(
-                  title: "Leave",
-                  count: "2",
-                  color: Colors.orange,
-                ),
-              ],
+            Consumer(
+              builder: (context, ref, _) {
+                final attendance = ref.watch(attendanceProvider);
+
+                return attendance.when(
+                  data: (data) {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        AttendanceSummaryCard(
+                          title: "Present",
+                          count: data.presentCount.toString(),
+                          color: Colors.green,
+                        ),
+                        AttendanceSummaryCard(
+                          title: "Absent",
+                          count: data.absentCount.toString(),
+                          color: Colors.red,
+                        ),
+                        AttendanceSummaryCard(
+                          title: "Total",
+                          count: data.totalCount.toString(),
+                          color: Colors.orange,
+                        ),
+                      ],
+                    );
+                  },
+                  loading: () => const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                  error: (e, _) => Text("Error: $e"),
+                );
+              },
             ),
 
-            const SizedBox(height: 24),
+             SizedBox(height: 24),
 
             /// 👩‍🎓 Student List
             Text(

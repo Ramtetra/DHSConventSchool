@@ -1,4 +1,6 @@
 // lib/repository/student_repository.dart
+import '../constants/api_endpoints.dart';
+import '../models/student_model.dart';
 import '../requestmodel/student_request_model.dart';
 import '../responsemodel/StudentDetailsModel.dart';
 import '../responsemodel/student_response_model.dart';
@@ -41,4 +43,27 @@ class StudentRepository {
       rethrow;
     }
   }
+
+  Future<List<StudentModel>> getStudents(String className) async {
+    try {
+      final response = await dio.post(
+        ApiEndpoints.getAllStudents,
+        data: {
+          "Class": className,
+        },
+      );
+
+      if (response.statusCode == 200 &&
+          response.data['success'] == true) {
+        final list = response.data['data'] as List;
+
+        return list.map((e) => StudentModel.fromJson(e)).toList();
+      } else {
+        throw Exception(response.data['message']);
+      }
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
 }
