@@ -2,7 +2,8 @@
 
 class ApiEndpoints {
   // Base URL - should be loaded from environment/config
-  static const String baseUrl = 'http://dshschool-001-site1.mtempurl.com//api';
+  //static const String baseUrl = 'http://dshschool-001-site1.mtempurl.com//api';
+  static const String baseUrl = 'http://akashbbs-001-site1.ltempurl.com/api/';
 
   // Auth Endpoints
   static const String login = '/auth/login';

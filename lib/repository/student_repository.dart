@@ -44,7 +44,7 @@ class StudentRepository {
     }
   }
 
-  Future<List<StudentModel>> getStudents(String className) async {
+/*  Future<List<StudentModel>> getStudents(String className) async {
     try {
       final response = await dio.post(
         ApiEndpoints.getAllStudents,
@@ -64,6 +64,6 @@ class StudentRepository {
     } catch (e) {
       throw Exception(e.toString());
     }
-  }
+  }*/
 
 }
