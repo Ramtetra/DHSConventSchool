@@ -207,7 +207,7 @@ class _SplashScreenState extends State<SplashScreen>
                                   end: Alignment.bottomRight,
                                 ).createShader(bounds),
                                 child: Text(
-                                  'DHS CONVENT',
+                                  'B.B.S.S Inter',
                                   style: GoogleFonts.montserrat(
                                     fontSize: 34,
                                     fontWeight: FontWeight.bold,
@@ -225,7 +225,7 @@ class _SplashScreenState extends State<SplashScreen>
                               ),
                               const SizedBox(height: 5),
                               Text(
-                                'SCHOOL',
+                                'College',
                                 style: GoogleFonts.montserrat(
                                   fontSize: 28,
                                   fontWeight: FontWeight.w600,
@@ -315,7 +315,7 @@ class _SplashScreenState extends State<SplashScreen>
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        '© ${DateTime.now().year} DHS Convent School',
+                        '© ${DateTime.now().year} B.B.S.S Inter College',
                         style: GoogleFonts.poppins(
                           fontSize: 11,
                           color: Colors.white.withOpacity(0.6),
